@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.bazyapp.BazyController">
+    <top>
+        <MenuBar>
+        </MenuBar>
+    </top>
+    <center>
+        <TabPane>
+            <Tab text="Dostawy" closable="false">
+                <TextArea fx:id="dostawy"/>
+            </Tab>
+            <Tab text="Magazyny" closable="false">
+                <TextArea fx:id="magazyny"/>
+            </Tab>
+            <Tab text="Klienci" closable="false">
+                <TextArea fx:id="klienci"/>
+            </Tab>
+            <Tab text="Pracownicy" closable="false">
+                <TextArea fx:id="pracownicy"/>
+            </Tab>
+            <Tab text="Produkty" closable="false">
+                <TextArea fx:id="produkty"/>
+            </Tab>
+            <Tab text="Zamówienia" closable="false">
+                <TextArea fx:id="zamowienia"/>
+            </Tab>
+        </TabPane>
+    </center>
+
+</BorderPane>
