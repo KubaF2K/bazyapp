@@ -13,22 +13,31 @@
     <center>
         <TabPane>
             <Tab text="Dostawy" closable="false">
-                <TextArea fx:id="dostawy"/>
+                <TableView fx:id="tvDostawy">
+                    <columns>
+                        <TableColumn text="ID" fx:id="tvDostawyId"/>
+                        <TableColumn text="Produkt" fx:id="tvDostawyProdukt"/>
+                        <TableColumn text="Magazyn" fx:id="tvDostawyMagazyn"/>
+                        <TableColumn text="Pracownik" fx:id="tvDostawyPracownik"/>
+                        <TableColumn text="Koszt" fx:id="tvDostawyKoszt"/>
+                        <TableColumn text="Ilość" fx:id="tvDostawyIlosc"/>
+                    </columns>
+                </TableView>
             </Tab>
             <Tab text="Magazyny" closable="false">
-                <TextArea fx:id="magazyny"/>
+                <TableView fx:id="tvMagazyny"/>
             </Tab>
             <Tab text="Klienci" closable="false">
-                <TextArea fx:id="klienci"/>
+                <TableView fx:id="tvKlienci"/>
             </Tab>
             <Tab text="Pracownicy" closable="false">
-                <TextArea fx:id="pracownicy"/>
+                <TableView fx:id="tvPracownicy"/>
             </Tab>
             <Tab text="Produkty" closable="false">
-                <TextArea fx:id="produkty"/>
+                <TableView fx:id="tvProdukty"/>
             </Tab>
             <Tab text="Zamówienia" closable="false">
-                <TextArea fx:id="zamowienia"/>
+                <TableView fx:id="tvZamowienia"/>
             </Tab>
         </TabPane>
     </center>
