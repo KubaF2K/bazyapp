@@ -3,16 +3,16 @@ package org.example.bazyapp.models;
 import java.util.Objects;
 
 public class Produkt {
-    public final int id_produktu;
-    public String nazwa;
-    public int cena;
-    public int ilosc;
+    private final int idProduktu;
+    private String nazwa;
+    private int cena;
+    private int ilosc;
 
-    public Produkt(int id_produktu, String nazwa, int cena, int ilosc) {
-        this.id_produktu = id_produktu;
-        this.nazwa = nazwa;
-        this.cena = cena;
-        this.ilosc = ilosc;
+    public Produkt(int idProduktu, String nazwa, int cena, int ilosc) {
+        this.idProduktu = idProduktu;
+        this.setNazwa(nazwa);
+        this.setCena(cena);
+        this.setIlosc(ilosc);
     }
 
     @Override
@@ -20,11 +20,39 @@ public class Produkt {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Produkt produkt = (Produkt) o;
-        return id_produktu == produkt.id_produktu && cena == produkt.cena && ilosc == produkt.ilosc && nazwa.equals(produkt.nazwa);
+        return getIdProduktu() == produkt.getIdProduktu() && getCena() == produkt.getCena() && getIlosc() == produkt.getIlosc() && getNazwa().equals(produkt.getNazwa());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_produktu, nazwa, cena, ilosc);
+        return Objects.hash(getIdProduktu(), getNazwa(), getCena(), getIlosc());
+    }
+
+    public int getIdProduktu() {
+        return idProduktu;
+    }
+
+    public String getNazwa() {
+        return nazwa;
+    }
+
+    public void setNazwa(String nazwa) {
+        this.nazwa = nazwa;
+    }
+
+    public int getCena() {
+        return cena;
+    }
+
+    public void setCena(int cena) {
+        this.cena = cena;
+    }
+
+    public int getIlosc() {
+        return ilosc;
+    }
+
+    public void setIlosc(int ilosc) {
+        this.ilosc = ilosc;
     }
 }

@@ -3,18 +3,18 @@ package org.example.bazyapp.models;
 import java.util.Objects;
 
 public class Zamowienie {
-    public final int id_zamowienia;
-    public int id_klienta;
-    public int cena;
-    public String status;
-    public int id_pracownika;
+    private final int idZamowienia;
+    private int idKlienta;
+    private int cena;
+    private String status;
+    private int idPracownika;
 
-    public Zamowienie(int id_zamowienia, int id_klienta, int cena, String status, int id_pracownika) {
-        this.id_zamowienia = id_zamowienia;
-        this.id_klienta = id_klienta;
-        this.cena = cena;
-        this.status = status;
-        this.id_pracownika = id_pracownika;
+    public Zamowienie(int idZamowienia, int idKlienta, int cena, String status, int idPracownika) {
+        this.idZamowienia = idZamowienia;
+        this.setIdKlienta(idKlienta);
+        this.setCena(cena);
+        this.setStatus(status);
+        this.setIdPracownika(idPracownika);
     }
 
     @Override
@@ -22,11 +22,47 @@ public class Zamowienie {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Zamowienie that = (Zamowienie) o;
-        return id_zamowienia == that.id_zamowienia && id_klienta == that.id_klienta && cena == that.cena && id_pracownika == that.id_pracownika && status.equals(that.status);
+        return getIdZamowienia() == that.getIdZamowienia() && getIdKlienta() == that.getIdKlienta() && getCena() == that.getCena() && getIdPracownika() == that.getIdPracownika() && getStatus().equals(that.getStatus());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_zamowienia, id_klienta, cena, status, id_pracownika);
+        return Objects.hash(getIdZamowienia(), getIdKlienta(), getCena(), getStatus(), getIdPracownika());
+    }
+
+    public int getIdZamowienia() {
+        return idZamowienia;
+    }
+
+    public int getIdKlienta() {
+        return idKlienta;
+    }
+
+    public void setIdKlienta(int idKlienta) {
+        this.idKlienta = idKlienta;
+    }
+
+    public int getCena() {
+        return cena;
+    }
+
+    public void setCena(int cena) {
+        this.cena = cena;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getIdPracownika() {
+        return idPracownika;
+    }
+
+    public void setIdPracownika(int idPracownika) {
+        this.idPracownika = idPracownika;
     }
 }

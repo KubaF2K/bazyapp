@@ -25,19 +25,58 @@
                 </TableView>
             </Tab>
             <Tab text="Magazyny" closable="false">
-                <TableView fx:id="tvMagazyny"/>
+                <TableView fx:id="tvMagazyny">
+                    <columns>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvMagazynyId"/>
+                        <TableColumn minWidth="150" text="Miejsce" fx:id="tvMagazynyMiejsce"/>
+                        <TableColumn minWidth="150" text="Nazwa" fx:id="tvMagazynyNazwa"/>
+                    </columns>
+                </TableView>
             </Tab>
             <Tab text="Klienci" closable="false">
-                <TableView fx:id="tvKlienci"/>
+                <TableView fx:id="tvKlienci">
+                    <columns>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvKlienciId"/>
+                        <TableColumn minWidth="150" text="Imię" fx:id="tvKlienciImie"/>
+                        <TableColumn minWidth="150" text="Nazwisko" fx:id="tvKlienciNazwisko"/>
+                        <TableColumn minWidth="150" text="PESEL" fx:id="tvKlienciPesel"/>
+                    </columns>
+                </TableView>
             </Tab>
             <Tab text="Pracownicy" closable="false">
-                <TableView fx:id="tvPracownicy"/>
+                <TableView fx:id="tvPracownicy">
+                    <columns>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvPracownicyId"/>
+                        <TableColumn minWidth="150" text="Magazyn" fx:id="tvPracownicyMagazyn"/>
+                        <TableColumn minWidth="150" text="Imię" fx:id="tvPracownicyImie"/>
+                        <TableColumn minWidth="150" text="Nazwisko" fx:id="tvPracownicyNazwisko"/>
+                        <TableColumn minWidth="150" text="Adres zamieszkania" fx:id="tvPracownicyAdres"/>
+                        <TableColumn minWidth="150" text="PESEL" fx:id="tvPracownicyPesel"/>
+                        <TableColumn minWidth="150" text="Wypłata" fx:id="tvPracownicyWyplata"/>
+                    </columns>
+                </TableView>
             </Tab>
             <Tab text="Produkty" closable="false">
-                <TableView fx:id="tvProdukty"/>
+                <TableView fx:id="tvProdukty">
+                    <columns>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvProduktyId"/>
+                        <TableColumn minWidth="150" text="Nazwa" fx:id="tvProduktyNazwa"/>
+                        <TableColumn minWidth="150" text="Cena" fx:id="tvProduktyCena"/>
+                        <TableColumn minWidth="150" text="Ilość" fx:id="tvProduktyIlosc"/>
+                    </columns>
+                </TableView>
             </Tab>
             <Tab text="Zamówienia" closable="false">
-                <TableView fx:id="tvZamowienia"/>
+                <TableView fx:id="tvZamowienia">
+                    <columns>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvZamowieniaId"/>
+                        <TableColumn minWidth="150" text="ID Klienta" fx:id="tvZamowieniaKlient"/>
+                        <TableColumn minWidth="150" text="Cena" fx:id="tvZamowieniaCena"/>
+                        <TableColumn minWidth="150" text="Status" fx:id="tvZamowieniaStatus"/>
+                        <TableColumn minWidth="150" text="ID Pracownika" fx:id="tvZamowieniaPracownik"/>
+                        <TableColumn minWidth="150" text="Szczegóły" fx:id="tvZamowieniaSzczegoly"/>
+                    </columns>
+                </TableView>
             </Tab>
         </TabPane>
     </center>

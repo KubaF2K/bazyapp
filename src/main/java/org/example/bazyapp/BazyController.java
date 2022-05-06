@@ -3,7 +3,6 @@ package org.example.bazyapp;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -49,10 +48,38 @@ public class BazyController implements Initializable {
     @FXML public TableColumn<Dostawa, Integer> tvDostawyIlosc;
 
     @FXML public TableView<Magazyn> tvMagazyny;
+    @FXML public TableColumn<Magazyn, Integer> tvMagazynyId;
+    @FXML public TableColumn<Magazyn, String> tvMagazynyMiejsce;
+    @FXML public TableColumn<Magazyn, String> tvMagazynyNazwa;
+
     @FXML public TableView<Klient> tvKlienci;
+    @FXML public TableColumn<Klient, Integer> tvKlienciId;
+    @FXML public TableColumn<Klient, String> tvKlienciImie;
+    @FXML public TableColumn<Klient, String> tvKlienciNazwisko;
+    @FXML public TableColumn<Klient, Integer> tvKlienciPesel;
+
     @FXML public TableView<Pracownik> tvPracownicy;
+    @FXML public TableColumn<Pracownik, Integer> tvPracownicyId;
+    @FXML public TableColumn<Pracownik, String> tvPracownicyMagazyn;
+    @FXML public TableColumn<Pracownik, String> tvPracownicyImie;
+    @FXML public TableColumn<Pracownik, String> tvPracownicyNazwisko;
+    @FXML public TableColumn<Pracownik, String> tvPracownicyAdres;
+    @FXML public TableColumn<Pracownik, Integer> tvPracownicyPesel;
+    @FXML public TableColumn<Pracownik, String> tvPracownicyWyplata;
+
     @FXML public TableView<Produkt> tvProdukty;
+    @FXML public TableColumn<Produkt, Integer> tvProduktyId;
+    @FXML public TableColumn<Produkt, String> tvProduktyNazwa;
+    @FXML public TableColumn<Produkt, String> tvProduktyCena;
+    @FXML public TableColumn<Produkt, Integer> tvProduktyIlosc;
+
     @FXML public TableView<Zamowienie> tvZamowienia;
+    @FXML public TableColumn<Zamowienie, Integer> tvZamowieniaId;
+    @FXML public TableColumn<Zamowienie, Integer> tvZamowieniaKlient;
+    @FXML public TableColumn<Zamowienie, String> tvZamowieniaCena;
+    @FXML public TableColumn<Zamowienie, String> tvZamowieniaStatus;
+    @FXML public TableColumn<Zamowienie, Integer> tvZamowieniaPracownik;
+    @FXML public TableColumn<Zamowienie, Button> tvZamowieniaSzczegoly;
     private DBConn dbConn;
 
     @FXML
@@ -75,26 +102,26 @@ public class BazyController implements Initializable {
         Optional<String> password = passPopup.showAndWait();
         password.ifPresent(pass -> dbConn = new DBConn(pass));
 
-        tvDostawyId.setCellValueFactory(new PropertyValueFactory<>("id_dostawy"));
+        tvDostawyId.setCellValueFactory(new PropertyValueFactory<>("idDostawy"));
         tvDostawyProdukt.setCellValueFactory(i -> {
             String val = "Brak!";
-            if (i.getValue() != null && produkty.containsKey(i.getValue().id_produktu))
-                val = produkty.get(i.getValue().id_produktu).nazwa;
+            if (i.getValue() != null && produkty.containsKey(i.getValue().getIdProduktu()))
+                val = produkty.get(i.getValue().getIdProduktu()).getNazwa();
             String finalVal = val;
             return Bindings.createStringBinding(() -> finalVal);
         });
         tvDostawyMagazyn.setCellValueFactory(i -> {
             String val = "Brak!";
-            if (i.getValue() != null && magazyny.containsKey(i.getValue().id_magazynu))
-                val = magazyny.get(i.getValue().id_magazynu).nazwa;
+            if (i.getValue() != null && magazyny.containsKey(i.getValue().getIdMagazynu()))
+                val = magazyny.get(i.getValue().getIdMagazynu()).getNazwa();
             String finalVal = val;
             return Bindings.createStringBinding(() -> finalVal);
         });
-        tvDostawyPracownik.setCellValueFactory(new PropertyValueFactory<>("id_pracownika"));
+        tvDostawyPracownik.setCellValueFactory(new PropertyValueFactory<>("idPracownika"));
         tvDostawyKoszt.setCellValueFactory(i -> {
             String val = "Brak!";
             if (i.getValue() != null) {
-                int koszt = i.getValue().koszt;
+                int koszt = i.getValue().getKoszt();
                 val = Integer.toString(koszt);
                 if (val.length() < 3)
                     val += " gr";
@@ -107,6 +134,91 @@ public class BazyController implements Initializable {
         });
         tvDostawyIlosc.setCellValueFactory(new PropertyValueFactory<>("ilosc"));
 
+        tvMagazynyId.setCellValueFactory(new PropertyValueFactory<>("idMagazynu"));
+        tvMagazynyMiejsce.setCellValueFactory(new PropertyValueFactory<>("miejsce"));
+        tvMagazynyNazwa.setCellValueFactory(new PropertyValueFactory<>("nazwa"));
+
+        tvKlienciId.setCellValueFactory(new PropertyValueFactory<>("idKlienta"));
+        tvKlienciImie.setCellValueFactory(new PropertyValueFactory<>("imie"));
+        tvKlienciNazwisko.setCellValueFactory(new PropertyValueFactory<>("nazwisko"));
+        tvKlienciPesel.setCellValueFactory(new PropertyValueFactory<>("pesel"));
+
+        tvPracownicyId.setCellValueFactory(new PropertyValueFactory<>("idPracownika"));
+        tvPracownicyMagazyn.setCellValueFactory(i -> {
+            String val = "Brak!";
+            if (i.getValue() != null && magazyny.containsKey(i.getValue().getIdMagazynu()))
+                val = magazyny.get(i.getValue().getIdMagazynu()).getNazwa();
+            String finalVal = val;
+            return Bindings.createStringBinding(() -> finalVal);
+        });
+        tvPracownicyImie.setCellValueFactory(new PropertyValueFactory<>("imie"));
+        tvPracownicyNazwisko.setCellValueFactory(new PropertyValueFactory<>("nazwisko"));
+        tvPracownicyAdres.setCellValueFactory(new PropertyValueFactory<>("adresZamieszkania"));
+        tvPracownicyPesel.setCellValueFactory(new PropertyValueFactory<>("pesel"));
+        tvPracownicyWyplata.setCellValueFactory(i -> {
+            String val = "Brak!";
+            if (i.getValue() != null) {
+                int wyplata = i.getValue().getWyplata();
+                val = Integer.toString(wyplata);
+                if (val.length() < 3)
+                    val += " gr";
+                else {
+                    val = new StringBuilder(val).insert(val.length()-2, ".").append(" zł").toString();
+                }
+            }
+            String finalVal = val;
+            return Bindings.createStringBinding(() -> finalVal);
+        });
+
+        tvProduktyId.setCellValueFactory(new PropertyValueFactory<>("idProduktu"));
+        tvProduktyNazwa.setCellValueFactory(new PropertyValueFactory<>("nazwa"));
+        tvProduktyCena.setCellValueFactory(i -> {
+            String val = "Brak!";
+            if (i.getValue() != null) {
+                int cena = i.getValue().getCena();
+                val = Integer.toString(cena);
+                if (val.length() < 3)
+                    val += " gr";
+                else {
+                    val = new StringBuilder(val).insert(val.length()-2, ".").append(" zł").toString();
+                }
+            }
+            String finalVal = val;
+            return Bindings.createStringBinding(() -> finalVal);
+        });
+        tvProduktyIlosc.setCellValueFactory(new PropertyValueFactory<>("ilosc"));
+
+        tvZamowieniaId.setCellValueFactory(new PropertyValueFactory<>("idZamowienia"));
+        tvZamowieniaKlient.setCellValueFactory(new PropertyValueFactory<>("idKlienta"));
+        tvZamowieniaCena.setCellValueFactory(i -> {
+            String val = "Brak!";
+            if (i.getValue() != null) {
+                int cena = i.getValue().getCena();
+                val = Integer.toString(cena);
+                if (val.length() < 3)
+                    val += " gr";
+                else {
+                    val = new StringBuilder(val).insert(val.length()-2, ".").append(" zł").toString();
+                }
+            }
+            String finalVal = val;
+            return Bindings.createStringBinding(() -> finalVal);
+        });
+        tvZamowieniaStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        tvZamowieniaPracownik.setCellValueFactory(new PropertyValueFactory<>("idPracownika"));
+        tvZamowieniaSzczegoly.setCellFactory(e -> {
+            Button viewButton = new Button();
+//TODO            viewButton.setOnAction();
+
+            return new TableCell<>() {
+                @Override
+                protected void updateItem(Button button, boolean b) {
+                    super.updateItem(button, b);
+                    if (b || getTableRow().getItem() == null) setGraphic(null);
+                    else setGraphic(viewButton);
+                }
+            };
+        });
 
         PoolDataSource pds = dbConn.getDataSource();
 
@@ -130,7 +242,9 @@ public class BazyController implements Initializable {
                 dostawy.put(resultSet.getInt(1), dostawa);
                 dostawyList.add(dostawa);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM KLIENCI";
             resultSet = stmt.executeQuery(query);
 
@@ -144,7 +258,9 @@ public class BazyController implements Initializable {
                 klienci.put(resultSet.getInt(1), klient);
                 klienciList.add(klient);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM MAGAZYNY";
             resultSet = stmt.executeQuery(query);
 
@@ -157,7 +273,9 @@ public class BazyController implements Initializable {
                 magazyny.put(resultSet.getInt(1), magazyn);
                 magazynyList.add(magazyn);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM PRACOWNICY";
             resultSet = stmt.executeQuery(query);
 
@@ -174,7 +292,9 @@ public class BazyController implements Initializable {
                 pracownicy.put(resultSet.getInt(1), pracownik);
                 pracownicyList.add(pracownik);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM PRODUKTY";
             resultSet = stmt.executeQuery(query);
 
@@ -188,7 +308,9 @@ public class BazyController implements Initializable {
                 produkty.put(resultSet.getInt(1), produkt);
                 produktyList.add(produkt);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM ZAMOWIENIA";
             resultSet = stmt.executeQuery(query);
 
@@ -203,7 +325,9 @@ public class BazyController implements Initializable {
                 zamowienia.put(resultSet.getInt(1), zamowienie);
                 zamowieniaList.add(zamowienie);
             }
-
+            resultSet.close();
+            stmt.close();
+            stmt = conn.createStatement();
             query = "SELECT * FROM ZAMOWIENIA_SZCZEGOLY";
             resultSet = stmt.executeQuery(query);
 
@@ -217,6 +341,8 @@ public class BazyController implements Initializable {
                         resultSet.getInt(4)
                 ));
             }
+            resultSet.close();
+            stmt.close();
 
 
         } catch (SQLException e){
@@ -225,6 +351,11 @@ public class BazyController implements Initializable {
         }
 
         tvDostawy.setItems(dostawyList);
+        tvMagazyny.setItems(magazynyList);
+        tvKlienci.setItems(klienciList);
+        tvPracownicy.setItems(pracownicyList);
+        tvProdukty.setItems(produktyList);
+        tvZamowienia.setItems(zamowieniaList);
 
     }
 }
