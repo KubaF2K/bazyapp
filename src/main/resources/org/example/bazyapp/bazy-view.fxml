@@ -15,12 +15,12 @@
             <Tab text="Dostawy" closable="false">
                 <TableView fx:id="tvDostawy">
                     <columns>
-                        <TableColumn text="ID" fx:id="tvDostawyId"/>
-                        <TableColumn text="Produkt" fx:id="tvDostawyProdukt"/>
-                        <TableColumn text="Magazyn" fx:id="tvDostawyMagazyn"/>
-                        <TableColumn text="Pracownik" fx:id="tvDostawyPracownik"/>
-                        <TableColumn text="Koszt" fx:id="tvDostawyKoszt"/>
-                        <TableColumn text="Ilość" fx:id="tvDostawyIlosc"/>
+                        <TableColumn minWidth="150" text="ID" fx:id="tvDostawyId"/>
+                        <TableColumn minWidth="150" text="Produkt" fx:id="tvDostawyProdukt"/>
+                        <TableColumn minWidth="150" text="Magazyn" fx:id="tvDostawyMagazyn"/>
+                        <TableColumn minWidth="150" text="Pracownik" fx:id="tvDostawyPracownik"/>
+                        <TableColumn minWidth="150" text="Koszt" fx:id="tvDostawyKoszt"/>
+                        <TableColumn minWidth="150" text="Ilość" fx:id="tvDostawyIlosc"/>
                     </columns>
                 </TableView>
             </Tab>
