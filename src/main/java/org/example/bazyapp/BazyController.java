@@ -5,8 +5,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 import oracle.ucp.jdbc.PoolDataSource;
 import org.example.bazyapp.models.*;
 
@@ -35,7 +38,7 @@ public class BazyController implements Initializable {
     public Map<Integer, Zamowienie> zamowienia = new HashMap<>();
     public ObservableList<Zamowienie> zamowieniaList = FXCollections.observableArrayList();
 
-    public HashMap<Integer, List<ZamowienieSzcz>> zamowienia_szczegoly = new HashMap<>();
+    public HashMap<Integer, List<ZamowienieSzcz>> zamowieniaSzczegoly = new HashMap<>();
 
 
 
@@ -207,17 +210,52 @@ public class BazyController implements Initializable {
         tvZamowieniaStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
         tvZamowieniaPracownik.setCellValueFactory(new PropertyValueFactory<>("idPracownika"));
         tvZamowieniaSzczegoly.setCellFactory(e -> {
-            Button viewButton = new Button();
-//TODO            viewButton.setOnAction();
-
-            return new TableCell<>() {
+            Button viewButton = new Button("Pokaż");
+            TableCell<Zamowienie, Button> detailCell = new TableCell<>(){
                 @Override
                 protected void updateItem(Button button, boolean b) {
                     super.updateItem(button, b);
-                    if (b || getTableRow().getItem() == null) setGraphic(null);
-                    else setGraphic(viewButton);
+                    if(b || getTableRow().getItem() == null)
+                        setGraphic(null);
+                    else
+                        setGraphic(viewButton);
                 }
             };
+            viewButton.setOnAction(actionEvent -> {
+                Stage detailWindow = new Stage();
+                detailWindow.setTitle("Szczegóły zamówienia");
+
+                TableView<ZamowienieSzcz> tvZamowieniaSzcz = new TableView<>();
+                Scene detailScene = new Scene(tvZamowieniaSzcz, 640, 480);
+                detailWindow.setScene(detailScene);
+
+                TableColumn<ZamowienieSzcz, Integer> tvZamowieniaSzczId = new TableColumn<>("ID");
+                TableColumn<ZamowienieSzcz, Integer> tvZamowieniaSzczProdId = new TableColumn<>("ID Produktu");
+                TableColumn<ZamowienieSzcz, String> tvZamowieniaSzczProd = new TableColumn<>("Nazwa Produktu");
+                TableColumn<ZamowienieSzcz, Integer> tvZamowieniaSzczIlosc = new TableColumn<>("Ilość");
+
+                tvZamowieniaSzcz.getColumns().add(tvZamowieniaSzczId);
+                tvZamowieniaSzcz.getColumns().add(tvZamowieniaSzczProdId);
+                tvZamowieniaSzcz.getColumns().add(tvZamowieniaSzczProd);
+                tvZamowieniaSzcz.getColumns().add(tvZamowieniaSzczIlosc);
+
+                tvZamowieniaSzczId.setCellValueFactory(new PropertyValueFactory<>("idSzczegoly"));
+                tvZamowieniaSzczProdId.setCellValueFactory(new PropertyValueFactory<>("idProduktu"));
+                tvZamowieniaSzczProd.setCellValueFactory(i -> {
+                    String val = "Brak!";
+                    if (i.getValue() != null && produkty.containsKey(i.getValue().getIdProduktu()))
+                        val = produkty.get(i.getValue().getIdProduktu()).getNazwa();
+                    String finalVal = val;
+                    return Bindings.createStringBinding(() -> finalVal);
+                });
+                tvZamowieniaSzczIlosc.setCellValueFactory(new PropertyValueFactory<>("ilosc"));
+
+                tvZamowieniaSzcz.setItems(FXCollections.observableList(
+                        zamowieniaSzczegoly.get(detailCell.getTableRow().getItem().getIdZamowienia()))
+                );
+                detailWindow.show();
+            });
+            return detailCell;
         });
 
         PoolDataSource pds = dbConn.getDataSource();
@@ -253,7 +291,7 @@ public class BazyController implements Initializable {
                         resultSet.getInt(1),
                         resultSet.getString(2),
                         resultSet.getString(3),
-                        resultSet.getInt(4)
+                        resultSet.getLong(4)
                 );
                 klienci.put(resultSet.getInt(1), klient);
                 klienciList.add(klient);
@@ -286,7 +324,7 @@ public class BazyController implements Initializable {
                         resultSet.getString(3),
                         resultSet.getString(4),
                         resultSet.getString(5),
-                        resultSet.getInt(6),
+                        resultSet.getLong(6),
                         resultSet.getInt(7)
                 );
                 pracownicy.put(resultSet.getInt(1), pracownik);
@@ -332,9 +370,9 @@ public class BazyController implements Initializable {
             resultSet = stmt.executeQuery(query);
 
             while (resultSet.next()) {
-                if (!zamowienia_szczegoly.containsKey(resultSet.getInt(2)))
-                    zamowienia_szczegoly.put(resultSet.getInt(2), new LinkedList<>());
-                zamowienia_szczegoly.get(resultSet.getInt(2)).add(new ZamowienieSzcz(
+                if (!zamowieniaSzczegoly.containsKey(resultSet.getInt(2)))
+                    zamowieniaSzczegoly.put(resultSet.getInt(2), new LinkedList<>());
+                zamowieniaSzczegoly.get(resultSet.getInt(2)).add(new ZamowienieSzcz(
                         resultSet.getInt(1),
                         resultSet.getInt(2),
                         resultSet.getInt(3),
@@ -347,7 +385,8 @@ public class BazyController implements Initializable {
 
         } catch (SQLException e){
             Alert sqlAlert = new Alert(Alert.AlertType.ERROR);
-            sqlAlert.setContentText("Błąd połączenia z bazą!" + e.getMessage());
+            sqlAlert.setContentText("Błąd połączenia z bazą! " + e.getMessage());
+            sqlAlert.showAndWait();
         }
 
         tvDostawy.setItems(dostawyList);

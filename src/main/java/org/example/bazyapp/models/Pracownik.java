@@ -8,11 +8,11 @@ public class Pracownik {
     private String imie;
     private String nazwisko;
     private String adresZamieszkania;
-    private int pesel;
+    private long pesel;
     private int wyplata;
 
     public Pracownik(int idPracownika, int idMagazynu, String imie, String nazwisko, String adresZamieszkania,
-                     int pesel, int wyplata) {
+                     long pesel, int wyplata) {
         this.idPracownika = idPracownika;
         this.setIdMagazynu(idMagazynu);
         this.setImie(imie);
@@ -71,11 +71,11 @@ public class Pracownik {
         this.adresZamieszkania = adresZamieszkania;
     }
 
-    public int getPesel() {
+    public long getPesel() {
         return pesel;
     }
 
-    public void setPesel(int pesel) {
+    public void setPesel(long pesel) {
         this.pesel = pesel;
     }
 

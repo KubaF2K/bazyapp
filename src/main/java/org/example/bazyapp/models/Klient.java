@@ -6,9 +6,9 @@ public class Klient {
     private final int idKlienta;
     private String imie;
     private String nazwisko;
-    private int pesel;
+    private long pesel;
 
-    public Klient(int idKlienta, String imie, String nazwisko, int pesel) {
+    public Klient(int idKlienta, String imie, String nazwisko, long pesel) {
         this.idKlienta = idKlienta;
         this.setImie(imie);
         this.setNazwisko(nazwisko);
@@ -48,11 +48,11 @@ public class Klient {
         this.nazwisko = nazwisko;
     }
 
-    public int getPesel() {
+    public long getPesel() {
         return pesel;
     }
 
-    public void setPesel(int pesel) {
+    public void setPesel(long pesel) {
         this.pesel = pesel;
     }
 }

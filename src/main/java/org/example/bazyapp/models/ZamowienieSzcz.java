@@ -3,15 +3,15 @@ package org.example.bazyapp.models;
 import java.util.Objects;
 
 public class ZamowienieSzcz {
-    public final int id_szczegoly;
-    public int id_zamowienia;
-    public int id_produktu;
+    public final int idSzczegoly;
+    public int idZamowienia;
+    public int idProduktu;
     public int ilosc;
 
-    public ZamowienieSzcz(int id_szczegoly, int id_zamowienia, int id_produktu, int ilosc) {
-        this.id_szczegoly = id_szczegoly;
-        this.id_zamowienia = id_zamowienia;
-        this.id_produktu = id_produktu;
+    public ZamowienieSzcz(int idSzczegoly, int idZamowienia, int idProduktu, int ilosc) {
+        this.idSzczegoly = idSzczegoly;
+        this.idZamowienia = idZamowienia;
+        this.idProduktu = idProduktu;
         this.ilosc = ilosc;
     }
 
@@ -20,11 +20,39 @@ public class ZamowienieSzcz {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ZamowienieSzcz that = (ZamowienieSzcz) o;
-        return id_szczegoly == that.id_szczegoly && id_zamowienia == that.id_zamowienia && id_produktu == that.id_produktu && ilosc == that.ilosc;
+        return idSzczegoly == that.idSzczegoly && idZamowienia == that.idZamowienia && idProduktu == that.idProduktu && ilosc == that.ilosc;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_szczegoly, id_zamowienia, id_produktu, ilosc);
+        return Objects.hash(idSzczegoly, idZamowienia, idProduktu, ilosc);
+    }
+
+    public int getIdSzczegoly() {
+        return idSzczegoly;
+    }
+
+    public int getIdZamowienia() {
+        return idZamowienia;
+    }
+
+    public void setIdZamowienia(int idZamowienia) {
+        this.idZamowienia = idZamowienia;
+    }
+
+    public int getIdProduktu() {
+        return idProduktu;
+    }
+
+    public void setIdProduktu(int idProduktu) {
+        this.idProduktu = idProduktu;
+    }
+
+    public int getIlosc() {
+        return ilosc;
+    }
+
+    public void setIlosc(int ilosc) {
+        this.ilosc = ilosc;
     }
 }
