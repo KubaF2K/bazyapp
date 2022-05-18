@@ -8,6 +8,13 @@
             fx:controller="org.example.bazyapp.BazyController">
     <top>
         <MenuBar>
+            <Menu text="Plik">
+                <MenuItem text="Odśwież" onAction="#refresh"/>
+                <MenuItem text="Wyjdź" onAction="#exit"/>
+            </Menu>
+            <Menu text="Dodaj">
+                <MenuItem text="Dostawa" onAction="#showAddDeliveryWindow"/>
+            </Menu>
         </MenuBar>
     </top>
     <center>
@@ -30,6 +37,7 @@
                         <TableColumn minWidth="150" text="ID" fx:id="tvMagazynyId"/>
                         <TableColumn minWidth="150" text="Miejsce" fx:id="tvMagazynyMiejsce"/>
                         <TableColumn minWidth="150" text="Nazwa" fx:id="tvMagazynyNazwa"/>
+                        <TableColumn minWidth="150" text="Usuń" fx:id="tvMagazynyUsun"/>
                     </columns>
                 </TableView>
             </Tab>
