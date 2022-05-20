@@ -48,6 +48,7 @@
                         <TableColumn minWidth="150" text="Imię" fx:id="tvKlienciImie"/>
                         <TableColumn minWidth="150" text="Nazwisko" fx:id="tvKlienciNazwisko"/>
                         <TableColumn minWidth="150" text="PESEL" fx:id="tvKlienciPesel"/>
+                        <TableColumn minWidth="150" text="Usuń" fx:id="tvKlienciUsun"/>
                     </columns>
                 </TableView>
             </Tab>
@@ -61,6 +62,7 @@
                         <TableColumn minWidth="150" text="Adres zamieszkania" fx:id="tvPracownicyAdres"/>
                         <TableColumn minWidth="150" text="PESEL" fx:id="tvPracownicyPesel"/>
                         <TableColumn minWidth="150" text="Wypłata" fx:id="tvPracownicyWyplata"/>
+                        <TableColumn minWidth="150" text="Usuń" fx:id="tvPracownicyUsun"/>
                     </columns>
                 </TableView>
             </Tab>
@@ -71,6 +73,7 @@
                         <TableColumn minWidth="150" text="Nazwa" fx:id="tvProduktyNazwa"/>
                         <TableColumn minWidth="150" text="Cena" fx:id="tvProduktyCena"/>
                         <TableColumn minWidth="150" text="Ilość" fx:id="tvProduktyIlosc"/>
+                        <TableColumn minWidth="150" text="Usuń" fx:id="tvProduktyUsun"/>
                     </columns>
                 </TableView>
             </Tab>
@@ -83,6 +86,7 @@
                         <TableColumn minWidth="150" text="Status" fx:id="tvZamowieniaStatus"/>
                         <TableColumn minWidth="150" text="ID Pracownika" fx:id="tvZamowieniaPracownik"/>
                         <TableColumn minWidth="150" text="Szczegóły" fx:id="tvZamowieniaSzczegoly"/>
+                        <TableColumn minWidth="150" text="Anuluj" fx:id="tvZamowieniaAnuluj"/>
                     </columns>
                 </TableView>
             </Tab>

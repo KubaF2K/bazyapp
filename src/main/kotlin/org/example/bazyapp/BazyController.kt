@@ -3,7 +3,7 @@ package org.example.bazyapp
 import javafx.application.Platform
 import javafx.beans.binding.Bindings
 import javafx.collections.FXCollections
-import javafx.event.ActionEvent
+import javafx.collections.ObservableList
 import javafx.event.EventHandler
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
@@ -20,22 +20,22 @@ import java.util.*
 
 class BazyController : Initializable {
     var dostawy: MutableMap<Int, Dostawa> = HashMap()
-    var dostawyList = FXCollections.observableArrayList<Dostawa>()
+    var dostawyList: ObservableList<Dostawa> = FXCollections.observableArrayList()
 
     var klienci: MutableMap<Int, Klient> = HashMap()
-    var klienciList = FXCollections.observableArrayList<Klient>()
+    var klienciList: ObservableList<Klient> = FXCollections.observableArrayList()
 
     var magazyny: MutableMap<Int, Magazyn> = HashMap()
-    var magazynyList = FXCollections.observableArrayList<Magazyn>()
+    var magazynyList: ObservableList<Magazyn> = FXCollections.observableArrayList()
 
     var pracownicy: MutableMap<Int, Pracownik> = HashMap()
-    var pracownicyList = FXCollections.observableArrayList<Pracownik>()
+    var pracownicyList: ObservableList<Pracownik> = FXCollections.observableArrayList()
 
     var produkty: MutableMap<Int, Produkt> = HashMap()
-    var produktyList = FXCollections.observableArrayList<Produkt>()
+    var produktyList: ObservableList<Produkt> = FXCollections.observableArrayList()
 
     var zamowienia: MutableMap<Int, Zamowienie> = HashMap()
-    var zamowieniaList = FXCollections.observableArrayList<Zamowienie>()
+    var zamowieniaList: ObservableList<Zamowienie> = FXCollections.observableArrayList()
     var zamowieniaSzczegoly = HashMap<Int, MutableList<ZamowienieSzcz?>>()
 
     @FXML
@@ -90,6 +90,9 @@ class BazyController : Initializable {
     lateinit var tvKlienciPesel: TableColumn<Klient, Int>
 
     @FXML
+    lateinit var tvKlienciUsun: TableColumn<Klient, Button>
+
+    @FXML
     lateinit var tvPracownicy: TableView<Pracownik>
 
     @FXML
@@ -114,6 +117,9 @@ class BazyController : Initializable {
     lateinit var tvPracownicyWyplata: TableColumn<Pracownik?, String?>
 
     @FXML
+    lateinit var tvPracownicyUsun: TableColumn<Pracownik, Button>
+
+    @FXML
     lateinit var tvProdukty: TableView<Produkt>
 
     @FXML
@@ -127,6 +133,9 @@ class BazyController : Initializable {
 
     @FXML
     lateinit var tvProduktyIlosc: TableColumn<Produkt, Int>
+
+    @FXML
+    lateinit var tvProduktyUsun: TableColumn<Produkt, Button>
 
     @FXML
     lateinit var tvZamowienia: TableView<Zamowienie>
@@ -149,8 +158,10 @@ class BazyController : Initializable {
     @FXML
     lateinit var tvZamowieniaSzczegoly: TableColumn<Zamowienie, Button>
 
+    @FXML
+    lateinit var tvZamowieniaAnuluj: TableColumn<Zamowienie, Button>
+
     private lateinit var dbConn: DBConn
-//TODO add delete cols
     @FXML
     override fun initialize(url: URL?, bundle: ResourceBundle?) {
         val passPopup = Dialog<String>()
@@ -210,7 +221,7 @@ class BazyController : Initializable {
         tvMagazynyId.cellValueFactory = PropertyValueFactory("idMagazynu")
         tvMagazynyMiejsce.cellValueFactory = PropertyValueFactory("miejsce")
         tvMagazynyNazwa.cellValueFactory = PropertyValueFactory("nazwa")
-        tvMagazynyUsun.setCellFactory { e: TableColumn<Magazyn, Button>? ->
+        tvMagazynyUsun.setCellFactory {
             val btnDel = Button("Usuń")
             val delCell: TableCell<Magazyn, Button?> = object : TableCell<Magazyn, Button?>() {
                 override fun updateItem(p0: Button?, p1: Boolean) {
@@ -218,7 +229,7 @@ class BazyController : Initializable {
                     graphic = if (p1 || tableRow.item == null) null else btnDel
                 }
             }
-            btnDel.onAction = EventHandler { actionEvent: ActionEvent? ->
+            btnDel.onAction = EventHandler {
                 val alert = Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć ten magazyn?",
                     ButtonType.YES, ButtonType.NO)
                 alert.title = "Usuwanie"
@@ -226,9 +237,6 @@ class BazyController : Initializable {
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
                         dbConn.delMagazyn(delCell.tableRow.item.idMagazynu)
-                        val alert2 = Alert(Alert.AlertType.INFORMATION, "Usunięto magazyn!")
-                        alert2.title = "Sukces"
-                        alert2.show()
                     }
                 }
             }
@@ -240,6 +248,30 @@ class BazyController : Initializable {
         tvKlienciImie.cellValueFactory = PropertyValueFactory("imie")
         tvKlienciNazwisko.cellValueFactory = PropertyValueFactory("nazwisko")
         tvKlienciPesel.cellValueFactory = PropertyValueFactory("pesel")
+        tvKlienciUsun.setCellFactory {
+            val btnDel = Button("Usuń")
+            val delCell: TableCell<Klient, Button?> = object : TableCell<Klient, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnDel
+                }
+            }
+            btnDel.onAction = EventHandler {
+                val alert = Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć tego klienta? " +
+                        "Jeśli klient ma aktywne zamówienia, nie będzie można go usunąć.",
+                    ButtonType.YES, ButtonType.NO)
+                alert.title = "Usuwanie"
+                val alertResult = alert.showAndWait()
+                alertResult.ifPresent { button: ButtonType ->
+                    if (button == ButtonType.YES) {
+                        dbConn.delKlient(delCell.tableRow.item.idKlienta)
+                    }
+                }
+            }
+
+            delCell
+        }
+
         tvPracownicyId.cellValueFactory = PropertyValueFactory("idPracownika")
         tvPracownicyMagazyn.setCellValueFactory { i: TableColumn.CellDataFeatures<Pracownik?, String?> ->
             var `val` = "Brak!"
@@ -266,6 +298,29 @@ class BazyController : Initializable {
             val finalVal = `val`
             Bindings.createStringBinding({ finalVal })
         }
+        tvPracownicyUsun.setCellFactory {
+            val btnDel = Button("Usuń")
+            val delCell: TableCell<Pracownik, Button?> = object : TableCell<Pracownik, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnDel
+                }
+            }
+            btnDel.onAction = EventHandler {
+                val alert = Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć tego pracownika?",
+                    ButtonType.YES, ButtonType.NO)
+                alert.title = "Usuwanie"
+                val alertResult = alert.showAndWait()
+                alertResult.ifPresent { button: ButtonType ->
+                    if (button == ButtonType.YES) {
+                        dbConn.delPracownik(delCell.tableRow.item.idPracownika)
+                    }
+                }
+            }
+
+            delCell
+        }
+
         tvProduktyId.cellValueFactory = PropertyValueFactory("idProduktu")
         tvProduktyNazwa.cellValueFactory = PropertyValueFactory("nazwa")
         tvProduktyCena.setCellValueFactory { i: TableColumn.CellDataFeatures<Produkt?, String?> ->
@@ -281,6 +336,29 @@ class BazyController : Initializable {
             Bindings.createStringBinding({ finalVal })
         }
         tvProduktyIlosc.cellValueFactory = PropertyValueFactory("ilosc")
+        tvProduktyUsun.setCellFactory {
+            val btnDel = Button("Usuń")
+            val delCell: TableCell<Produkt, Button?> = object : TableCell<Produkt, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnDel
+                }
+            }
+            btnDel.onAction = EventHandler {
+                val alert = Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz usunąć ten produkt?",
+                    ButtonType.YES, ButtonType.NO)
+                alert.title = "Usuwanie"
+                val alertResult = alert.showAndWait()
+                alertResult.ifPresent { button: ButtonType ->
+                    if (button == ButtonType.YES) {
+                        dbConn.delProdukt(delCell.tableRow.item.idProduktu)
+                    }
+                }
+            }
+
+            delCell
+        }
+
         tvZamowieniaId.cellValueFactory = PropertyValueFactory("idZamowienia")
         tvZamowieniaKlient.cellValueFactory = PropertyValueFactory("idKlienta")
         tvZamowieniaCena.setCellValueFactory { i: TableColumn.CellDataFeatures<Zamowienie?, String?> ->
@@ -297,7 +375,7 @@ class BazyController : Initializable {
         }
         tvZamowieniaStatus.cellValueFactory = PropertyValueFactory("status")
         tvZamowieniaPracownik.cellValueFactory = PropertyValueFactory("idPracownika")
-        tvZamowieniaSzczegoly.setCellFactory { e: TableColumn<Zamowienie, Button>? ->
+        tvZamowieniaSzczegoly.setCellFactory {
             val viewButton = Button("Pokaż")
             val detailCell: TableCell<Zamowienie, Button?> = object : TableCell<Zamowienie, Button?>() {
                 override fun updateItem(button: Button?, b: Boolean) {
@@ -305,7 +383,7 @@ class BazyController : Initializable {
                     graphic = if (b || tableRow.item == null) null else viewButton
                 }
             }
-            viewButton.onAction = EventHandler { actionEvent: ActionEvent? ->
+            viewButton.onAction = EventHandler {
                 val detailWindow = Stage()
                 detailWindow.title = "Szczegóły zamówienia"
                 val tvZamowieniaSzcz = TableView<ZamowienieSzcz?>()
@@ -337,6 +415,28 @@ class BazyController : Initializable {
                 detailWindow.show()
             }
             detailCell
+        }
+        tvZamowieniaAnuluj.setCellFactory {
+            val btnDel = Button("Usuń")
+            val delCell: TableCell<Zamowienie, Button?> = object : TableCell<Zamowienie, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnDel
+                }
+            }
+            btnDel.onAction = EventHandler {
+                val alert = Alert(Alert.AlertType.CONFIRMATION, "Czy na pewno chcesz anulować to zamówienie?",
+                    ButtonType.YES, ButtonType.NO)
+                alert.title = "Usuwanie"
+                val alertResult = alert.showAndWait()
+                alertResult.ifPresent { button: ButtonType ->
+                    if (button == ButtonType.YES) {
+                        dbConn.delZamowienie(delCell.tableRow.item.idZamowienia)
+                    }
+                }
+            }
+
+            delCell
         }
 
         refresh()
@@ -494,7 +594,7 @@ class BazyController : Initializable {
         alert.close()
     }
 
-    fun showAddDeliveryWindow(actionEvent: ActionEvent) {
+    fun showAddDeliveryWindow() {
         val addDeliveryWindow = Stage()
         val root = VBox(10.0)
         val scene = Scene(root, 640.0, 480.0)
@@ -548,7 +648,7 @@ class BazyController : Initializable {
         addDeliveryWindow.show()
     }
 
-    fun exit(actionEvent: ActionEvent) {
+    fun exit() {
         Platform.exit()
     }
 }

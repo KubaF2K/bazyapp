@@ -34,6 +34,29 @@ class DBConn (private val DB_PASSWORD: String) {
         return pds!!
     }
 
+    fun checkDeliveries(klientId: Int): Int {
+        var deliveries = 0
+        val pds = dataSource
+        try {
+            pds.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "SELECT COUNT(*) FROM ZAMOWIENIA WHERE ID_KLIENTA = ?"
+                val stmt = conn.prepareStatement(query)
+                stmt.setInt(1, klientId)
+                val result = stmt.executeQuery()
+                result.next()
+                deliveries = result.getInt(1)
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return deliveries
+    }
+
     fun addDelivery(produktId: Int, magazynId: Int, pracownikId: Int, ilosc: Int) {
         val pds = dataSource
         try {
@@ -84,25 +107,31 @@ class DBConn (private val DB_PASSWORD: String) {
     }
 
     fun delKlient(id: Int) {
-        try {
-            dataSource.connection.use { conn ->
-                conn.autoCommit = false
-
-                val query = "CALL P_DELETE.DELETE_KLIENCI(?)"
-                val stmt = conn.prepareCall(query)
-                stmt.setInt(1, id)
-                stmt.execute()
-                val alert = Alert(Alert.AlertType.INFORMATION)
-                alert.title = "Sukces"
-                alert.headerText = "Usunięto klienta z bazy!"
-                alert.show()
+        if (checkDeliveries(id) == 0)
+            try {
+                dataSource.connection.use { conn ->
+                    conn.autoCommit = false
+                    val query = "CALL P_DELETE.DELETE_KLIENCI(?)"
+                    val stmt = conn.prepareCall(query)
+                    stmt.setInt(1, id)
+                    stmt.execute()
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = "Sukces"
+                    alert.headerText = "Usunięto klienta z bazy!"
+                    alert.show()
+                }
+            } catch (e: SQLException) {
+                val error = Alert(Alert.AlertType.ERROR)
+                error.title = "Błąd!"
+                error.headerText = "Błąd połączenia z bazą!"
+                error.contentText = e.message
+                error.show()
             }
-        } catch (e: SQLException) {
-            val error = Alert(Alert.AlertType.ERROR)
-            error.title = "Błąd!"
-            error.headerText = "Błąd połączenia z bazą!"
-            error.contentText = e.message
-            error.show()
+        else {
+            val alert = Alert(Alert.AlertType.WARNING)
+            alert.title = "Uwaga"
+            alert.headerText = "Klient ma aktywne zamówienia!"
+            alert.show()
         }
     }
 
