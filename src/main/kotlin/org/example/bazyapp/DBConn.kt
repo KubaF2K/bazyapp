@@ -3,7 +3,9 @@ package org.example.bazyapp
 import javafx.scene.control.Alert
 import oracle.ucp.jdbc.PoolDataSource
 import oracle.ucp.jdbc.PoolDataSourceFactory
+import org.example.bazyapp.models.Klient
 import java.sql.SQLException
+import java.sql.Types
 
 class DBConn (private val DB_PASSWORD: String) {
     private val DB_URL = "jdbc:oracle:thin:@db202203141259_medium?TNS_ADMIN=Wallet_DB202203141259/"
@@ -202,5 +204,32 @@ class DBConn (private val DB_PASSWORD: String) {
             error.contentText = e.message
             error.show()
         }
+    }
+
+    fun getKlient(id: Int): Klient? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+
+                val query = "{? = CALL P_SELECTONE.SELECTONE_KLIENCI(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "ADMIN.KLIENCI%rowtype")//TODO type
+                stmt.setInt(2, id)
+                val result = stmt.executeQuery()
+                val klientStruct = result.getObject(1) as java.sql.Struct
+                val klientAttrs = klientStruct.attributes
+                return Klient(
+                    klientAttrs[0] as Int, klientAttrs[1] as String,
+                    klientAttrs[2] as String, klientAttrs[3] as Long
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
     }
 }

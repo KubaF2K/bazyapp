@@ -12,6 +12,7 @@ import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.scene.text.Text
 import javafx.stage.Stage
 import org.example.bazyapp.models.*
 import java.net.URL
@@ -650,5 +651,40 @@ class BazyController : Initializable {
 
     fun exit() {
         Platform.exit()
+    }
+
+    fun showClientDetailWindow() {
+        val detailWindow = Stage()
+        val root = VBox(10.0)
+        val scene = Scene(root, 640.0, 480.0)
+
+        val boxText = HBox(10.0)
+        val labelText = Label("Podaj id:")
+        val txtFldText = TextField()
+        val btnText = Button("Wyświetl")
+        boxText.children.addAll(labelText, txtFldText, btnText)
+        root.children.add(boxText)
+
+        val textId = Text("ID: ")
+        val textName = Text("Imię i nazwisko: ")
+        val textPesel = Text("PESEL: ")
+        root.children.addAll(textId, textName, textPesel)
+
+        btnText.setOnAction {
+            try {
+                val klient = dbConn.getKlient(txtFldText.text.toInt())
+                textId.text = "ID: " + (klient?.idKlienta ?: "Brak klienta o podanym ID!")
+                textName.text = "Imię i nazwisko: " + klient?.imie + " " + klient?.nazwisko
+                textPesel.text = "PESEL: " + klient?.pesel
+            } catch (e: NumberFormatException) {
+                val alert = Alert(Alert.AlertType.WARNING, e.message)
+                alert.headerText = "Błędny format liczby!"
+                alert.show()
+            }
+        }
+
+        detailWindow.title = "Wyświetl"
+        detailWindow.scene = scene
+        detailWindow.show()
     }
 }

@@ -15,6 +15,9 @@
             <Menu text="Dodaj">
                 <MenuItem text="Dostawa" onAction="#showAddDeliveryWindow"/>
             </Menu>
+            <Menu text="Wyświetl">
+                <MenuItem text="Klient" onAction="#showClientDetailWindow"/>
+            </Menu>
         </MenuBar>
     </top>
     <center>
