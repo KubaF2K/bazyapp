@@ -1,9 +1,11 @@
 package org.example.bazyapp
 
 import javafx.scene.control.Alert
+import oracle.jdbc.OracleStruct
 import oracle.ucp.jdbc.PoolDataSource
 import oracle.ucp.jdbc.PoolDataSourceFactory
-import org.example.bazyapp.models.Klient
+import org.example.bazyapp.models.*
+import java.math.BigDecimal
 import java.sql.SQLException
 import java.sql.Types
 
@@ -210,17 +212,121 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-
-                val query = "{? = CALL P_SELECTONE.SELECTONE_KLIENCI(?)}"
+                val query = "{? = call P_SELECTONE.SELECTONE_KLIENCI(?)}"
                 val stmt = conn.prepareCall(query)
-                stmt.registerOutParameter(1, Types.STRUCT, "ADMIN.KLIENCI%rowtype")//TODO type
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.KLIENT")
                 stmt.setInt(2, id)
-                val result = stmt.executeQuery()
-                val klientStruct = result.getObject(1) as java.sql.Struct
+                stmt.execute()
+                val klientStruct = stmt.getObject(1) as OracleStruct
                 val klientAttrs = klientStruct.attributes
                 return Klient(
-                    klientAttrs[0] as Int, klientAttrs[1] as String,
-                    klientAttrs[2] as String, klientAttrs[3] as Long
+                    (klientAttrs[0] as BigDecimal).toInt(), klientAttrs[1] as String,
+                    klientAttrs[2] as String, (klientAttrs[3] as BigDecimal).toLong()
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
+    }
+
+    fun getMagazyn(id: Int): Magazyn? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{? = call P_SELECTONE.SELECTONE_MAGAZYNY(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.MAGAZYN")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val magazynStruct = stmt.getObject(1) as OracleStruct
+                val magazynAttrs = magazynStruct.attributes
+                return Magazyn(
+                    (magazynAttrs[0] as BigDecimal).toInt(), magazynAttrs[1] as String, magazynAttrs[2] as String
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
+    }
+
+    fun getPracownik(id: Int): Pracownik? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{? = call P_SELECTONE.SELECTONE_PRACOWNICY(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.PRACOWNIK")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val pracownikStruct = stmt.getObject(1) as OracleStruct
+                val pracownikAttrs = pracownikStruct.attributes
+                return Pracownik(
+                    (pracownikAttrs[0] as BigDecimal).toInt(), (pracownikAttrs[1] as BigDecimal).toInt(),
+                    pracownikAttrs[2] as String, pracownikAttrs[3] as String, pracownikAttrs[4] as String,
+                    (pracownikAttrs[5] as BigDecimal).toLong(), (pracownikAttrs[6] as BigDecimal).toInt()
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
+    }
+
+    fun getProdukt(id: Int): Produkt? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{? = call P_SELECTONE.SELECTONE_PRODUKTY(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.PRODUKT")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val produktStruct = stmt.getObject(1) as OracleStruct
+                val produktAttrs = produktStruct.attributes
+                return Produkt(
+                    (produktAttrs[0] as BigDecimal).toInt(), produktAttrs[1] as String,
+                    (produktAttrs[2] as BigDecimal).toInt(), (produktAttrs[3] as BigDecimal).toInt()
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
+    }
+
+    fun getZamowienie(id: Int): Zamowienie? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{? = call P_SELECTONE.SELECTONE_ZAMOWIENIA(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.ZAMOWIENIE")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val zamowienieStruct = stmt.getObject(1) as OracleStruct
+                val zamowienieAttrs = zamowienieStruct.attributes
+                return Zamowienie(
+                    (zamowienieAttrs[0] as BigDecimal).toInt(), (zamowienieAttrs[1] as BigDecimal).toInt(),
+                    (zamowienieAttrs[2] as BigDecimal).toInt(), zamowienieAttrs[3] as String,
+                    (zamowienieAttrs[4] as BigDecimal).toInt()
                 )
             }
         } catch (e: SQLException) {

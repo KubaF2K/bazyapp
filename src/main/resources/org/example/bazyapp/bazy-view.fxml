@@ -17,6 +17,7 @@
             </Menu>
             <Menu text="Wyświetl">
                 <MenuItem text="Klient" onAction="#showClientDetailWindow"/>
+                <MenuItem text="Magazyn" onAction="#showWarehouseDetailWindow"/>
             </Menu>
         </MenuBar>
     </top>

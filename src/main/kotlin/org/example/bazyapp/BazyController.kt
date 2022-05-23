@@ -674,7 +674,7 @@ class BazyController : Initializable {
             try {
                 val klient = dbConn.getKlient(txtFldText.text.toInt())
                 textId.text = "ID: " + (klient?.idKlienta ?: "Brak klienta o podanym ID!")
-                textName.text = "Imię i nazwisko: " + klient?.imie + " " + klient?.nazwisko
+                textName.text = "Imię i nazwisko: " + (klient?.imie ?: "") + " " + (klient?.nazwisko ?: "")
                 textPesel.text = "PESEL: " + klient?.pesel
             } catch (e: NumberFormatException) {
                 val alert = Alert(Alert.AlertType.WARNING, e.message)
@@ -683,6 +683,40 @@ class BazyController : Initializable {
             }
         }
 
+        detailWindow.title = "Wyświetl"
+        detailWindow.scene = scene
+        detailWindow.show()
+    }
+
+    fun showWarehouseDetailWindow() {
+        val detailWindow = Stage()
+        val root = VBox(10.0)
+        val scene = Scene(root, 640.0, 480.0)
+
+        val boxText = HBox(10.0)
+        val labelText = Label("Podaj id:")
+        val txtFldText = TextField()
+        val btnText = Button("Wyświetl")
+        boxText.children.addAll(labelText, txtFldText, btnText)
+        root.children.add(boxText)
+
+        val textId = Text("ID: ")
+        val textAddr = Text("Adres: ")
+        val textName = Text("Nazwa: ")
+        root.children.addAll(textId, textAddr, textName)
+
+        btnText.setOnAction {
+            try {
+                val magazyn = dbConn.getMagazyn(txtFldText.text.toInt())
+                textId.text = "ID: " + (magazyn?.idMagazynu ?: "Brak magazynu o podanym ID!")
+                textAddr.text = "Adres: " + (magazyn?.miejsce ?: "")
+                textName.text = "Nazwa: " + (magazyn?.nazwa ?: "")
+            } catch (e: NumberFormatException) {
+                val alert = Alert(Alert.AlertType.WARNING, e.message)
+                alert.headerText = "Błędny format liczby!"
+                alert.show()
+            }
+        }
         detailWindow.title = "Wyświetl"
         detailWindow.scene = scene
         detailWindow.show()
