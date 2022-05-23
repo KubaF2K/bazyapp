@@ -18,6 +18,9 @@
             <Menu text="Wyświetl">
                 <MenuItem text="Klient" onAction="#showClientDetailWindow"/>
                 <MenuItem text="Magazyn" onAction="#showWarehouseDetailWindow"/>
+                <MenuItem text="Pracownik" onAction="#showWorkerDetailWindow"/>
+                <MenuItem text="Produkt" onAction="#showProductDetailWindow"/>
+                <MenuItem text="Zamówienie" onAction="#showOrderDetailWindow"/>
             </Menu>
         </MenuBar>
     </top>
