@@ -19,6 +19,7 @@ class DetailWindowController(val type: BazyController.DetailWindowType, val dbCo
     @FXML lateinit var boxOut: VBox
     @FXML lateinit var textId: Text
 
+    @FXML
     override fun initialize(p0: URL?, p1: ResourceBundle?) {
         if (id != null) {
             txtFldId.text = id.toString()
@@ -145,7 +146,19 @@ class DetailWindowController(val type: BazyController.DetailWindowType, val dbCo
                 boxPracownik.children.addAll(textPracownikId, btnPracownikShow)
 
                 val btnSzczegoly = Button("Wyświetl szczegóły")
-                //TODO
+                if (dbConn.getZamowienieSzczegoly(txtFldId.text.toInt()).isEmpty())
+                    btnSzczegoly.isDisable = true
+                else
+                    btnSzczegoly.setOnAction {
+                        val detailWindow = Stage()
+                        detailWindow.title = "Szczegóły zamówienia"
+                        val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
+                        val detailController = ZamowieniaSzczegolyController(dbConn, txtFldId.text.toInt())
+                        loader.setController(detailController)
+                        val scene = Scene(loader.load(), 600.0, 400.0)
+                        detailWindow.scene = scene
+                        detailWindow.show()
+                    }
 
                 boxOut.children.addAll(boxKlient, textPrice, textStatus, boxPracownik, btnSzczegoly)
                 try {

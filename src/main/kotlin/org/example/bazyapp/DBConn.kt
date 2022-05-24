@@ -212,7 +212,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{? = call P_SELECTONE.SELECTONE_KLIENCI(?)}"
+                val query = "{? = call P_READ.SELECTONE_KLIENCI(?)}"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.KLIENT")
                 stmt.setInt(2, id)
@@ -238,7 +238,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{? = call P_SELECTONE.SELECTONE_MAGAZYNY(?)}"
+                val query = "{? = call P_READ.SELECTONE_MAGAZYNY(?)}"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.MAGAZYN")
                 stmt.setInt(2, id)
@@ -263,7 +263,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{? = call P_SELECTONE.SELECTONE_PRACOWNICY(?)}"
+                val query = "{? = call P_READ.SELECTONE_PRACOWNICY(?)}"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.PRACOWNIK")
                 stmt.setInt(2, id)
@@ -290,7 +290,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{? = call P_SELECTONE.SELECTONE_PRODUKTY(?)}"
+                val query = "{? = call P_READ.SELECTONE_PRODUKTY(?)}"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.PRODUKT")
                 stmt.setInt(2, id)
@@ -316,7 +316,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{? = call P_SELECTONE.SELECTONE_ZAMOWIENIA(?)}"
+                val query = "{? = call P_READ.SELECTONE_ZAMOWIENIA(?)}"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.ZAMOWIENIE")
                 stmt.setInt(2, id)
@@ -343,7 +343,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_DOSTAWY }"
+                val query = "{ ? = call P_READ.SELECTALL_DOSTAWY }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_DOSTAWA")
                 stmt.execute()
@@ -379,7 +379,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_KLIENCI }"
+                val query = "{ ? = call P_READ.SELECTALL_KLIENCI }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_KLIENT")
                 stmt.execute()
@@ -413,7 +413,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_MAGAZYNY }"
+                val query = "{ ? = call P_READ.SELECTALL_MAGAZYNY }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_MAGAZYN")
                 stmt.execute()
@@ -446,7 +446,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_PRACOWNICY }"
+                val query = "{ ? = call P_READ.SELECTALL_PRACOWNICY }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_PRACOWNIK")
                 stmt.execute()
@@ -483,7 +483,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_PRODUKTY }"
+                val query = "{ ? = call P_READ.SELECTALL_PRODUKTY }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_PRODUKT")
                 stmt.execute()
@@ -517,7 +517,7 @@ class DBConn (private val DB_PASSWORD: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-                val query = "{ ? = call P_SELECTALL.SELECTALL_ZAMOWIENIA }"
+                val query = "{ ? = call P_READ.SELECTALL_ZAMOWIENIA }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE")
                 stmt.execute()
@@ -546,5 +546,40 @@ class DBConn (private val DB_PASSWORD: String) {
             error.show()
         }
         return emptyMap()
+    }
+
+    fun getZamowienieSzczegoly(id: Int): List<ZamowienieSzcz> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_READ.SELECT_ZAMOWIENIA_SZCZEGOLY(?) }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE_SZCZEGOLY")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val szczegolySqlArray = stmt.getArray(1)
+                val list = ArrayList<ZamowienieSzcz>()
+                val szczegolyResult = szczegolySqlArray.resultSet
+                while (szczegolyResult.next()) {
+                    val szczegolyStruct = szczegolyResult.getObject(2) as OracleStruct
+                    val szczegolyAttrs = szczegolyStruct.attributes
+                    val item = ZamowienieSzcz(
+                        (szczegolyAttrs[0] as BigDecimal).toInt(),
+                        (szczegolyAttrs[1] as BigDecimal).toInt(),
+                        (szczegolyAttrs[2] as BigDecimal).toInt(),
+                        (szczegolyAttrs[3] as BigDecimal).toInt()
+                    )
+                    list.add(item)
+                }
+                return list
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyList()
     }
 }

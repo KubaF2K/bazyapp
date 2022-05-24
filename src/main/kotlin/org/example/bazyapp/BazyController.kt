@@ -36,7 +36,6 @@ class BazyController : Initializable {
 
     lateinit var zamowienia: Map<Int, Zamowienie>
     var zamowieniaList: ObservableList<Zamowienie> = FXCollections.observableArrayList()
-    var zamowieniaSzczegoly = HashMap<Int, MutableList<ZamowienieSzcz?>>()
 
     @FXML
     lateinit var tvDostawy: TableView<Dostawa>
@@ -386,32 +385,11 @@ class BazyController : Initializable {
             viewButton.onAction = EventHandler {
                 val detailWindow = Stage()
                 detailWindow.title = "Szczegóły zamówienia"
-                val tvZamowieniaSzcz = TableView<ZamowienieSzcz?>()
-                val detailScene = Scene(tvZamowieniaSzcz, 640.0, 480.0)
-                detailWindow.scene = detailScene
-                val tvZamowieniaSzczId = TableColumn<ZamowienieSzcz?, Int>("ID")
-                val tvZamowieniaSzczProdId = TableColumn<ZamowienieSzcz?, Int>("ID Produktu")
-                val tvZamowieniaSzczProd = TableColumn<ZamowienieSzcz?, String>("Nazwa Produktu")
-                val tvZamowieniaSzczIlosc = TableColumn<ZamowienieSzcz?, Int>("Ilość")
-                tvZamowieniaSzcz.columns.add(tvZamowieniaSzczId)
-                tvZamowieniaSzcz.columns.add(tvZamowieniaSzczProdId)
-                tvZamowieniaSzcz.columns.add(tvZamowieniaSzczProd)
-                tvZamowieniaSzcz.columns.add(tvZamowieniaSzczIlosc)
-                tvZamowieniaSzczId.cellValueFactory = PropertyValueFactory("idSzczegoly")
-                tvZamowieniaSzczProdId.cellValueFactory = PropertyValueFactory("idProduktu")
-                tvZamowieniaSzczProd.setCellValueFactory { i: TableColumn.CellDataFeatures<ZamowienieSzcz?, String> ->
-                    var `val` = "Brak!"
-                    if (i.value != null && produkty.containsKey(
-                            i.value!!.idProduktu
-                        )
-                    ) `val` = produkty[i.value!!.idProduktu]!!.nazwa
-                    val finalVal = `val`
-                    Bindings.createStringBinding({ finalVal })
-                }
-                tvZamowieniaSzczIlosc.cellValueFactory = PropertyValueFactory("ilosc")
-                tvZamowieniaSzcz.items = FXCollections.observableList(
-                    zamowieniaSzczegoly[detailCell.tableRow.item.idZamowienia]
-                )
+                val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
+                val detailController = ZamowieniaSzczegolyController(dbConn, detailCell.tableRow.item.idZamowienia)
+                loader.setController(detailController)
+                val scene = Scene(loader.load(), 600.0, 400.0)
+                detailWindow.scene = scene
                 detailWindow.show()
             }
             detailCell
@@ -454,7 +432,6 @@ class BazyController : Initializable {
         pracownicyList.clear()
         produktyList.clear()
         zamowieniaList.clear()
-        zamowieniaSzczegoly.clear()
 
         dostawy = dbConn.getDostawy()
         klienci = dbConn.getKlienci()
@@ -469,7 +446,6 @@ class BazyController : Initializable {
         for (pracownik in pracownicy) pracownicyList.add(pracownik.value)
         for (produkt in produkty) produktyList.add(produkt.value)
         for (zamowienie in zamowienia) zamowieniaList.add(zamowienie.value)
-        //TODO zamowienia szczegoly
 
         tvDostawy.items = dostawyList
         tvMagazyny.items = magazynyList
