@@ -16,26 +16,25 @@ import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import org.example.bazyapp.models.*
 import java.net.URL
-import java.sql.SQLException
 import java.util.*
 
 class BazyController : Initializable {
-    var dostawy: MutableMap<Int, Dostawa> = HashMap()
+    lateinit var dostawy: Map<Int, Dostawa>
     var dostawyList: ObservableList<Dostawa> = FXCollections.observableArrayList()
 
-    var klienci: MutableMap<Int, Klient> = HashMap()
+    lateinit var klienci: Map<Int, Klient>
     var klienciList: ObservableList<Klient> = FXCollections.observableArrayList()
 
-    var magazyny: MutableMap<Int, Magazyn> = HashMap()
+    lateinit var magazyny: Map<Int, Magazyn>
     var magazynyList: ObservableList<Magazyn> = FXCollections.observableArrayList()
 
-    var pracownicy: MutableMap<Int, Pracownik> = HashMap()
+    lateinit var pracownicy: Map<Int, Pracownik>
     var pracownicyList: ObservableList<Pracownik> = FXCollections.observableArrayList()
 
-    var produkty: MutableMap<Int, Produkt> = HashMap()
+    lateinit var produkty: Map<Int, Produkt>
     var produktyList: ObservableList<Produkt> = FXCollections.observableArrayList()
 
-    var zamowienia: MutableMap<Int, Zamowienie> = HashMap()
+    lateinit var zamowienia: Map<Int, Zamowienie>
     var zamowieniaList: ObservableList<Zamowienie> = FXCollections.observableArrayList()
     var zamowieniaSzczegoly = HashMap<Int, MutableList<ZamowienieSzcz?>>()
 
@@ -449,142 +448,29 @@ class BazyController : Initializable {
         alert.headerText = "Łączenie z bazą..."
         alert.show()
 
-        dostawy.clear()
         dostawyList.clear()
-        klienci.clear()
         klienciList.clear()
-        magazyny.clear()
         magazynyList.clear()
-        pracownicy.clear()
         pracownicyList.clear()
-        produkty.clear()
         produktyList.clear()
-        zamowienia.clear()
         zamowieniaList.clear()
         zamowieniaSzczegoly.clear()
 
-        val pds = dbConn.dataSource
-        try {
-            pds.connection.use { conn ->
-                conn.autoCommit = false
-                var query = "SELECT * FROM DOSTAWY"
-                var stmt = conn.createStatement()
-                var resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val dostawa = Dostawa(
-                        resultSet.getInt(1),
-                        resultSet.getInt(2),
-                        resultSet.getInt(3),
-                        resultSet.getInt(4),
-                        resultSet.getInt(5),
-                        resultSet.getInt(6)
-                    )
-                    dostawy[resultSet.getInt(1)] = dostawa
-                    dostawyList.add(dostawa)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM KLIENCI"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val klient = Klient(
-                        resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3),
-                        resultSet.getLong(4)
-                    )
-                    klienci[resultSet.getInt(1)] = klient
-                    klienciList.add(klient)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM MAGAZYNY"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val magazyn = Magazyn(
-                        resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getString(3)
-                    )
-                    magazyny[resultSet.getInt(1)] = magazyn
-                    magazynyList.add(magazyn)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM PRACOWNICY"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val pracownik = Pracownik(
-                        resultSet.getInt(1),
-                        resultSet.getInt(2),
-                        resultSet.getString(3),
-                        resultSet.getString(4),
-                        resultSet.getString(5),
-                        resultSet.getLong(6),
-                        resultSet.getInt(7)
-                    )
-                    pracownicy[resultSet.getInt(1)] = pracownik
-                    pracownicyList.add(pracownik)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM PRODUKTY"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val produkt = Produkt(
-                        resultSet.getInt(1),
-                        resultSet.getString(2),
-                        resultSet.getInt(3),
-                        resultSet.getInt(4)
-                    )
-                    produkty[resultSet.getInt(1)] = produkt
-                    produktyList.add(produkt)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM ZAMOWIENIA"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    val zamowienie = Zamowienie(
-                        resultSet.getInt(1),
-                        resultSet.getInt(2),
-                        resultSet.getInt(3),
-                        resultSet.getString(4),
-                        resultSet.getInt(5)
-                    )
-                    zamowienia[resultSet.getInt(1)] = zamowienie
-                    zamowieniaList.add(zamowienie)
-                }
-                resultSet.close()
-                stmt.close()
-                stmt = conn.createStatement()
-                query = "SELECT * FROM ZAMOWIENIA_SZCZEGOLY"
-                resultSet = stmt.executeQuery(query)
-                while (resultSet.next()) {
-                    if (!zamowieniaSzczegoly.containsKey(resultSet.getInt(2))) zamowieniaSzczegoly[resultSet.getInt(2)] =
-                        LinkedList()
-                    zamowieniaSzczegoly[resultSet.getInt(2)]!!.add(
-                        ZamowienieSzcz(
-                            resultSet.getInt(1),
-                            resultSet.getInt(2),
-                            resultSet.getInt(3),
-                            resultSet.getInt(4)
-                        )
-                    )
-                }
-                resultSet.close()
-                stmt.close()
-            }
-        } catch (e: SQLException) {
-            val sqlAlert = Alert(Alert.AlertType.ERROR)
-            sqlAlert.contentText = "Błąd połączenia z bazą! " + e.message
-            sqlAlert.showAndWait()
-        }
+        dostawy = dbConn.getDostawy()
+        klienci = dbConn.getKlienci()
+        magazyny = dbConn.getMagazyny()
+        pracownicy = dbConn.getPracownicy()
+        produkty = dbConn.getProdukty()
+        zamowienia = dbConn.getZamowienia()
+
+        for (dostawa in dostawy) dostawyList.add(dostawa.value)
+        for (klient in klienci) klienciList.add(klient.value)
+        for (magazyn in magazyny) magazynyList.add(magazyn.value)
+        for (pracownik in pracownicy) pracownicyList.add(pracownik.value)
+        for (produkt in produkty) produktyList.add(produkt.value)
+        for (zamowienie in zamowienia) zamowieniaList.add(zamowienie.value)
+        //TODO zamowienia szczegoly
+
         tvDostawy.items = dostawyList
         tvMagazyny.items = magazynyList
         tvKlienci.items = klienciList

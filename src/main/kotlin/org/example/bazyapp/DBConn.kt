@@ -338,4 +338,213 @@ class DBConn (private val DB_PASSWORD: String) {
         }
         return null
     }
+
+    fun getDostawy(): Map<Int, Dostawa> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_DOSTAWY }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_DOSTAWA")
+                stmt.execute()
+                val dostawySqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Dostawa>()
+                val dostawyResult = dostawySqlArray.resultSet
+                while (dostawyResult.next()) {
+                    val dostawaStruct = dostawyResult.getObject(2) as OracleStruct
+                    val dostawaAttrs = dostawaStruct.attributes
+                    val dostawa = Dostawa(
+                        (dostawaAttrs[0] as BigDecimal).toInt(),
+                        (dostawaAttrs[1] as BigDecimal).toInt(),
+                        (dostawaAttrs[2] as BigDecimal).toInt(),
+                        (dostawaAttrs[3] as BigDecimal).toInt(),
+                        (dostawaAttrs[4] as BigDecimal).toInt(),
+                        (dostawaAttrs[5] as BigDecimal).toInt()
+                    )
+                    map[(dostawaAttrs[0] as BigDecimal).toInt()] = dostawa
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
+    fun getKlienci(): Map<Int, Klient> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_KLIENCI }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_KLIENT")
+                stmt.execute()
+                val klienciSqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Klient>()
+                val klienciResult = klienciSqlArray.resultSet
+                while (klienciResult.next()) {
+                    val klientStruct = klienciResult.getObject(2) as OracleStruct
+                    val klientAttrs = klientStruct.attributes
+                    val klient = Klient(
+                        (klientAttrs[0] as BigDecimal).toInt(),
+                        klientAttrs[1] as String,
+                        klientAttrs[2] as String,
+                        (klientAttrs[3] as BigDecimal).toLong()
+                    )
+                    map[(klientAttrs[0] as BigDecimal).toInt()] = klient
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
+    fun getMagazyny(): Map<Int, Magazyn> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_MAGAZYNY }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_MAGAZYN")
+                stmt.execute()
+                val magazynySqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Magazyn>()
+                val magazynyResult = magazynySqlArray.resultSet
+                while (magazynyResult.next()) {
+                    val magazynStruct = magazynyResult.getObject(2) as OracleStruct
+                    val magazynAttrs = magazynStruct.attributes
+                    val magazyn = Magazyn(
+                        (magazynAttrs[0] as BigDecimal).toInt(),
+                        magazynAttrs[1] as String,
+                        magazynAttrs[2] as String
+                    )
+                    map[(magazynAttrs[0] as BigDecimal).toInt()] = magazyn
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
+    fun getPracownicy(): Map<Int, Pracownik> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_PRACOWNICY }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_PRACOWNIK")
+                stmt.execute()
+                val pracownicySqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Pracownik>()
+                val pracownicyResult = pracownicySqlArray.resultSet
+                while (pracownicyResult.next()) {
+                    val pracownikStruct = pracownicyResult.getObject(2) as OracleStruct
+                    val pracownikAttrs = pracownikStruct.attributes
+                    val pracownik = Pracownik(
+                        (pracownikAttrs[0] as BigDecimal).toInt(),
+                        (pracownikAttrs[1] as BigDecimal).toInt(),
+                        pracownikAttrs[2] as String,
+                        pracownikAttrs[3] as String,
+                        pracownikAttrs[4] as String,
+                        (pracownikAttrs[5] as BigDecimal).toLong(),
+                        (pracownikAttrs[6] as BigDecimal).toInt(),
+                    )
+                    map[(pracownikAttrs[0] as BigDecimal).toInt()] = pracownik
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
+    fun getProdukty(): Map<Int, Produkt> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_PRODUKTY }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_PRODUKT")
+                stmt.execute()
+                val produktySqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Produkt>()
+                val produktyResult = produktySqlArray.resultSet
+                while (produktyResult.next()) {
+                    val produktStruct = produktyResult.getObject(2) as OracleStruct
+                    val produktAttrs = produktStruct.attributes
+                    val produkt = Produkt(
+                        (produktAttrs[0] as BigDecimal).toInt(),
+                        produktAttrs[1] as String,
+                        (produktAttrs[2] as BigDecimal).toInt(),
+                        (produktAttrs[3] as BigDecimal).toInt()
+                    )
+                    map[(produktAttrs[0] as BigDecimal).toInt()] = produkt
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
+    fun getZamowienia(): Map<Int, Zamowienie> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_SELECTALL.SELECTALL_ZAMOWIENIA }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE")
+                stmt.execute()
+                val zamowieniaSqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Zamowienie>()
+                val zamowieniaResult = zamowieniaSqlArray.resultSet
+                while (zamowieniaResult.next()) {
+                    val zamowienieStruct = zamowieniaResult.getObject(2) as OracleStruct
+                    val zamowienieAttrs = zamowienieStruct.attributes
+                    val zamowienie = Zamowienie(
+                        (zamowienieAttrs[0] as BigDecimal).toInt(),
+                        (zamowienieAttrs[1] as BigDecimal).toInt(),
+                        (zamowienieAttrs[2] as BigDecimal).toInt(),
+                        zamowienieAttrs[3] as String,
+                        (zamowienieAttrs[4] as BigDecimal).toInt()
+                    )
+                    map[(zamowienieAttrs[0] as BigDecimal).toInt()] = zamowienie
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
 }
