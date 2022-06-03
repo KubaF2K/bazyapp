@@ -11,7 +11,7 @@ import org.example.bazyapp.models.ZamowienieSzcz
 import java.net.URL
 import java.util.*
 
-class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int): Initializable {
+class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int, val showingHistorical: Boolean = false): Initializable {
     @FXML lateinit var tvZamowieniaSzcz: TableView<ZamowienieSzcz>
     @FXML lateinit var tvZamowieniaSzczId: TableColumn<ZamowienieSzcz, Int>
     @FXML lateinit var tvZamowieniaSzczProdId: TableColumn<ZamowienieSzcz, Int>
@@ -31,6 +31,11 @@ class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int): Initializa
             Bindings.createStringBinding({ finalText })
         }
         tvZamowieniaSzczIlosc.cellValueFactory = PropertyValueFactory("ilosc")
-        tvZamowieniaSzcz.items = FXCollections.observableList(dbConn.getZamowienieSzczegoly(id))
+        tvZamowieniaSzcz.items = FXCollections.observableList(
+            if (showingHistorical)
+                dbConn.getZamowienieHistSzczegoly(id)
+            else
+                dbConn.getZamowienieSzczegoly(id)
+        )
     }
 }

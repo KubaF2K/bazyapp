@@ -36,6 +36,10 @@ class BazyController : Initializable {
 
     lateinit var zamowienia: Map<Int, Zamowienie>
     var zamowieniaList: ObservableList<Zamowienie> = FXCollections.observableArrayList()
+    lateinit var zamowieniaHist: Map<Int, Zamowienie>
+    var zamowieniaHistList: ObservableList<Zamowienie> = FXCollections.observableArrayList()
+    
+    private var showingHistorical = false
 
     @FXML
     lateinit var tvDostawy: TableView<Dostawa>
@@ -159,6 +163,9 @@ class BazyController : Initializable {
 
     @FXML
     lateinit var tvZamowieniaAnuluj: TableColumn<Zamowienie, Button>
+
+    @FXML
+    lateinit var btnToggleOrders: Button
 
     private lateinit var dbConn: DBConn
     @FXML
@@ -386,7 +393,7 @@ class BazyController : Initializable {
                 val detailWindow = Stage()
                 detailWindow.title = "Szczegóły zamówienia"
                 val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
-                val detailController = ZamowieniaSzczegolyController(dbConn, detailCell.tableRow.item.idZamowienia)
+                val detailController = ZamowieniaSzczegolyController(dbConn, detailCell.tableRow.item.idZamowienia, showingHistorical)
                 loader.setController(detailController)
                 val scene = Scene(loader.load(), 600.0, 400.0)
                 detailWindow.scene = scene
@@ -447,12 +454,18 @@ class BazyController : Initializable {
         for (produkt in produkty) produktyList.add(produkt.value)
         for (zamowienie in zamowienia) zamowieniaList.add(zamowienie.value)
 
+        if (::zamowieniaHist.isInitialized) {
+            zamowieniaHistList.clear()
+            zamowieniaHist = dbConn.getZamowieniaHist()
+            for (zamowienie in zamowieniaHist) zamowieniaHistList.add(zamowienie.value)
+        }
+
         tvDostawy.items = dostawyList
         tvMagazyny.items = magazynyList
         tvKlienci.items = klienciList
         tvPracownicy.items = pracownicyList
         tvProdukty.items = produktyList
-        tvZamowienia.items = zamowieniaList
+        tvZamowienia.items = if (showingHistorical) zamowieniaHistList else zamowieniaList
 
         alert.close()
     }
@@ -548,5 +561,23 @@ class BazyController : Initializable {
 
     fun showOrderDetailWindow() {
         showDetailWindow(DetailWindowType.ZAMOWIENIE)
+    }
+
+    fun toggleOrderList() {
+        if (!::zamowieniaHist.isInitialized) {
+            zamowieniaHist = dbConn.getZamowieniaHist()
+            for (zamowienie in zamowieniaHist) zamowieniaHistList.add(zamowienie.value)
+        }
+        
+        if (!showingHistorical) {
+            tvZamowienia.items = zamowieniaHistList
+            btnToggleOrders.text = "Przełącz na aktualne"
+            showingHistorical = true
+        }
+        else {
+            tvZamowienia.items = zamowieniaList
+            btnToggleOrders.text = "Przełącz na historyczne"
+            showingHistorical = false
+        }
     }
 }

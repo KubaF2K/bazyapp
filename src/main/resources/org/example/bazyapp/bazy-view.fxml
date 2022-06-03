@@ -85,17 +85,20 @@
                 </TableView>
             </Tab>
             <Tab text="Zamówienia" closable="false">
-                <TableView fx:id="tvZamowienia">
-                    <columns>
-                        <TableColumn minWidth="150" text="ID" fx:id="tvZamowieniaId"/>
-                        <TableColumn minWidth="150" text="ID Klienta" fx:id="tvZamowieniaKlient"/>
-                        <TableColumn minWidth="150" text="Cena" fx:id="tvZamowieniaCena"/>
-                        <TableColumn minWidth="150" text="Status" fx:id="tvZamowieniaStatus"/>
-                        <TableColumn minWidth="150" text="ID Pracownika" fx:id="tvZamowieniaPracownik"/>
-                        <TableColumn minWidth="150" text="Szczegóły" fx:id="tvZamowieniaSzczegoly"/>
-                        <TableColumn minWidth="150" text="Anuluj" fx:id="tvZamowieniaAnuluj"/>
-                    </columns>
-                </TableView>
+                <VBox spacing="10">
+                    <Button text="Przełącz na historyczne" onAction="#toggleOrderList" fx:id="btnToggleOrders"/>
+                    <TableView fx:id="tvZamowienia">
+                        <columns>
+                            <TableColumn minWidth="150" text="ID" fx:id="tvZamowieniaId"/>
+                            <TableColumn minWidth="150" text="ID Klienta" fx:id="tvZamowieniaKlient"/>
+                            <TableColumn minWidth="150" text="Cena" fx:id="tvZamowieniaCena"/>
+                            <TableColumn minWidth="150" text="Status" fx:id="tvZamowieniaStatus"/>
+                            <TableColumn minWidth="150" text="ID Pracownika" fx:id="tvZamowieniaPracownik"/>
+                            <TableColumn minWidth="150" text="Szczegóły" fx:id="tvZamowieniaSzczegoly"/>
+                            <TableColumn minWidth="150" text="Anuluj" fx:id="tvZamowieniaAnuluj"/>
+                        </columns>
+                    </TableView>
+                </VBox>
             </Tab>
         </TabPane>
     </center>

@@ -339,6 +339,33 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
+    fun getZamowienieHist(id: Int): Zamowienie? {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{? = call P_READ.SELECTONE_ZAMOWIENIA_HISTORYCZNE(?)}"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.STRUCT, "P_TYPES.ZAMOWIENIE")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val zamowienieStruct = stmt.getObject(1) as OracleStruct
+                val zamowienieAttrs = zamowienieStruct.attributes
+                return Zamowienie(
+                    (zamowienieAttrs[0] as BigDecimal).toInt(), (zamowienieAttrs[1] as BigDecimal).toInt(),
+                    (zamowienieAttrs[2] as BigDecimal).toInt(), zamowienieAttrs[3] as String,
+                    (zamowienieAttrs[4] as BigDecimal).toInt()
+                )
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return null
+    }
+
     fun getDostawy(): Map<Int, Dostawa> {
         try {
             dataSource.connection.use { conn ->
@@ -548,11 +575,81 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
+    fun getZamowieniaHist(): Map<Int, Zamowienie> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_READ.SELECTALL_ZAMOWIENIA_HISTORYCZNE }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE")
+                stmt.execute()
+                val zamowieniaSqlArray = stmt.getArray(1)
+                val map = HashMap<Int, Zamowienie>()
+                val zamowieniaResult = zamowieniaSqlArray.resultSet
+                while (zamowieniaResult.next()) {
+                    val zamowienieStruct = zamowieniaResult.getObject(2) as OracleStruct
+                    val zamowienieAttrs = zamowienieStruct.attributes
+                    val zamowienie = Zamowienie(
+                        (zamowienieAttrs[0] as BigDecimal).toInt(),
+                        (zamowienieAttrs[1] as BigDecimal).toInt(),
+                        (zamowienieAttrs[2] as BigDecimal).toInt(),
+                        if(zamowienieAttrs[3] != null) zamowienieAttrs[3] as String else "Nieokreślony",
+                        (zamowienieAttrs[4] as BigDecimal).toInt()
+                    )
+                    map[(zamowienieAttrs[0] as BigDecimal).toInt()] = zamowienie
+                }
+                return map
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyMap()
+    }
+
     fun getZamowienieSzczegoly(id: Int): List<ZamowienieSzcz> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
                 val query = "{ ? = call P_READ.SELECT_ZAMOWIENIA_SZCZEGOLY(?) }"
+                val stmt = conn.prepareCall(query)
+                stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE_SZCZEGOLY")
+                stmt.setInt(2, id)
+                stmt.execute()
+                val szczegolySqlArray = stmt.getArray(1)
+                val list = ArrayList<ZamowienieSzcz>()
+                val szczegolyResult = szczegolySqlArray.resultSet
+                while (szczegolyResult.next()) {
+                    val szczegolyStruct = szczegolyResult.getObject(2) as OracleStruct
+                    val szczegolyAttrs = szczegolyStruct.attributes
+                    val item = ZamowienieSzcz(
+                        (szczegolyAttrs[0] as BigDecimal).toInt(),
+                        (szczegolyAttrs[1] as BigDecimal).toInt(),
+                        (szczegolyAttrs[2] as BigDecimal).toInt(),
+                        (szczegolyAttrs[3] as BigDecimal).toInt()
+                    )
+                    list.add(item)
+                }
+                return list
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+        return emptyList()
+    }
+
+    fun getZamowienieHistSzczegoly(id: Int): List<ZamowienieSzcz> {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "{ ? = call P_READ.SELECT_ZAMOWIENIA_SZCZEGOLY_HISTORYCZNE(?) }"
                 val stmt = conn.prepareCall(query)
                 stmt.registerOutParameter(1, Types.ARRAY, "P_TYPES.T_ZAMOWIENIE_SZCZEGOLY")
                 stmt.setInt(2, id)

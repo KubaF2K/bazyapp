@@ -6,6 +6,7 @@ import javafx.fxml.Initializable
 import javafx.scene.Scene
 import javafx.scene.control.Alert
 import javafx.scene.control.Button
+import javafx.scene.control.CheckBox
 import javafx.scene.control.TextField
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
@@ -14,10 +15,15 @@ import javafx.stage.Stage
 import java.net.URL
 import java.util.*
 
-class DetailWindowController(val type: BazyController.DetailWindowType, val dbConn: DBConn, val id: Int? = null): Initializable {
+class DetailWindowController(
+    private val type: BazyController.DetailWindowType,
+    private val dbConn: DBConn, private val id: Int? = null,
+    private val showingHistorical: Boolean = false
+): Initializable {
     @FXML lateinit var txtFldId: TextField
     @FXML lateinit var boxOut: VBox
     @FXML lateinit var textId: Text
+    @FXML lateinit var chkHistorical: CheckBox
 
     @FXML
     override fun initialize(p0: URL?, p1: ResourceBundle?) {
@@ -130,6 +136,8 @@ class DetailWindowController(val type: BazyController.DetailWindowType, val dbCo
                 }
             }
             BazyController.DetailWindowType.ZAMOWIENIE -> {
+                chkHistorical.isVisible = true
+                chkHistorical.isSelected = showingHistorical
                 val boxKlient = HBox(10.0)
                 val textKlientId = Text()
                 val btnKlientShow = Button("Wyświetl")
@@ -153,7 +161,7 @@ class DetailWindowController(val type: BazyController.DetailWindowType, val dbCo
                         val detailWindow = Stage()
                         detailWindow.title = "Szczegóły zamówienia"
                         val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
-                        val detailController = ZamowieniaSzczegolyController(dbConn, txtFldId.text.toInt())
+                        val detailController = ZamowieniaSzczegolyController(dbConn, txtFldId.text.toInt(), chkHistorical.isSelected)
                         loader.setController(detailController)
                         val scene = Scene(loader.load(), 600.0, 400.0)
                         detailWindow.scene = scene
@@ -162,7 +170,10 @@ class DetailWindowController(val type: BazyController.DetailWindowType, val dbCo
 
                 boxOut.children.addAll(boxKlient, textPrice, textStatus, boxPracownik, btnSzczegoly)
                 try {
-                    val zamowienie = dbConn.getZamowienie(txtFldId.text.toInt())
+                    val zamowienie = if (chkHistorical.isSelected)
+                        dbConn.getZamowienieHist(txtFldId.text.toInt())
+                    else
+                        dbConn.getZamowienie(txtFldId.text.toInt())
                     textId.text = "ID: " + (zamowienie?.idZamowienia ?: "Brak zamówienia o podanym ID!")
                     textKlientId.text = "ID Klienta: " + (zamowienie?.idKlienta ?: "Brak klienta o podanym ID!")
                     if (zamowienie != null) {
