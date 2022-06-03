@@ -190,6 +190,11 @@ class BazyController : Initializable {
         password.ifPresent { pass: String -> passString = pass }
         dbConn = DBConn(passString)
 
+        if (!dbConn.testConnection()) {
+            exit()
+            return
+        }
+
         tvDostawyId.cellValueFactory = PropertyValueFactory("idDostawy")
         tvDostawyProdukt.setCellValueFactory { i: TableColumn.CellDataFeatures<Dostawa?, String?> ->
             var `val` = "Brak!"
@@ -428,9 +433,10 @@ class BazyController : Initializable {
     }
 
     fun refresh() {
-        val alert = Alert(Alert.AlertType.INFORMATION)
+        val alert = Alert(Alert.AlertType.NONE)
         alert.title = "Łączenie..."
         alert.headerText = "Łączenie z bazą..."
+        alert.result = ButtonType.OK
         alert.show()
 
         dostawyList.clear()

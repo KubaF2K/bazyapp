@@ -85,9 +85,10 @@
                 </TableView>
             </Tab>
             <Tab text="Zamówienia" closable="false">
-                <VBox spacing="10">
+                <VBox>
                     <Button text="Przełącz na historyczne" onAction="#toggleOrderList" fx:id="btnToggleOrders"/>
                     <TableView fx:id="tvZamowienia">
+<!--                        TODO fix height-->
                         <columns>
                             <TableColumn minWidth="150" text="ID" fx:id="tvZamowieniaId"/>
                             <TableColumn minWidth="150" text="ID Klienta" fx:id="tvZamowieniaKlient"/>
@@ -102,5 +103,4 @@
             </Tab>
         </TabPane>
     </center>
-
 </BorderPane>

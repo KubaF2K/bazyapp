@@ -38,6 +38,19 @@ class DBConn (private val DB_PASSWORD: String) {
         return pds!!
     }
 
+    fun testConnection(): Boolean {
+        try {
+            dataSource.connection.use { conn -> return conn.isValid(0) }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.showAndWait()
+        }
+        return false
+    }
+
     fun checkDeliveries(klientId: Int): Int {
         var deliveries = 0
         val pds = dataSource
@@ -351,8 +364,10 @@ class DBConn (private val DB_PASSWORD: String) {
                 val zamowienieStruct = stmt.getObject(1) as OracleStruct
                 val zamowienieAttrs = zamowienieStruct.attributes
                 return Zamowienie(
-                    (zamowienieAttrs[0] as BigDecimal).toInt(), (zamowienieAttrs[1] as BigDecimal).toInt(),
-                    (zamowienieAttrs[2] as BigDecimal).toInt(), zamowienieAttrs[3] as String,
+                    (zamowienieAttrs[0] as BigDecimal).toInt(),
+                    (zamowienieAttrs[1] as BigDecimal).toInt(),
+                    (zamowienieAttrs[2] as BigDecimal).toInt(),
+                    if(zamowienieAttrs[3] != null) zamowienieAttrs[3] as String else "Nieokreślony",
                     (zamowienieAttrs[4] as BigDecimal).toInt()
                 )
             }
