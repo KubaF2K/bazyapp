@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
+import org.example.bazyapp.AddEdit.AddOrderController
 import org.example.bazyapp.models.*
 import java.net.URL
 import java.util.*
@@ -41,134 +42,66 @@ class BazyController : Initializable {
     
     private var showingHistorical = false
 
-    @FXML
-    lateinit var tvDostawy: TableView<Dostawa>
+    @FXML lateinit var tvDostawy: TableView<Dostawa>
 
-    @FXML
-    lateinit var tvDostawyId: TableColumn<Dostawa, Int>
+    @FXML lateinit var tvDostawyId: TableColumn<Dostawa, Int>
+    @FXML lateinit var tvDostawyProdukt: TableColumn<Dostawa, String>
+    @FXML lateinit var tvDostawyMagazyn: TableColumn<Dostawa, String>
+    @FXML lateinit var tvDostawyPracownik: TableColumn<Dostawa, Int>
+    @FXML lateinit var tvDostawyKoszt: TableColumn<Dostawa, String>
+    @FXML lateinit var tvDostawyIlosc: TableColumn<Dostawa, Int>
 
-    @FXML
-    lateinit var tvDostawyProdukt: TableColumn<Dostawa, String>
+    @FXML lateinit var tvMagazyny: TableView<Magazyn>
 
-    @FXML
-    lateinit var tvDostawyMagazyn: TableColumn<Dostawa, String>
+    @FXML lateinit var tvMagazynyId: TableColumn<Magazyn, Int>
+    @FXML lateinit var tvMagazynyMiejsce: TableColumn<Magazyn, String>
+    @FXML lateinit var tvMagazynyNazwa: TableColumn<Magazyn, String>
+    @FXML lateinit var tvMagazynyEdytuj: TableColumn<Magazyn, Button>
+    @FXML lateinit var tvMagazynyUsun: TableColumn<Magazyn, Button>
 
-    @FXML
-    lateinit var tvDostawyPracownik: TableColumn<Dostawa, Int>
+    @FXML lateinit var tvKlienci: TableView<Klient>
 
-    @FXML
-    lateinit var tvDostawyKoszt: TableColumn<Dostawa, String>
+    @FXML lateinit var tvKlienciId: TableColumn<Klient, Int>
+    @FXML lateinit var tvKlienciImie: TableColumn<Klient, String>
+    @FXML lateinit var tvKlienciNazwisko: TableColumn<Klient, String>
+    @FXML lateinit var tvKlienciPesel: TableColumn<Klient, Int>
+    @FXML lateinit var tvKlienciAddOrder: TableColumn<Klient, Button>
+    @FXML lateinit var tvKlienciEdytuj: TableColumn<Klient, Button>
+    @FXML lateinit var tvKlienciUsun: TableColumn<Klient, Button>
 
-    @FXML
-    lateinit var tvDostawyIlosc: TableColumn<Dostawa, Int>
+    @FXML lateinit var tvPracownicy: TableView<Pracownik>
 
-    @FXML
-    lateinit var tvMagazyny: TableView<Magazyn>
+    @FXML lateinit var tvPracownicyId: TableColumn<Pracownik, Int>
+    @FXML lateinit var tvPracownicyMagazyn: TableColumn<Pracownik?, String?>
+    @FXML lateinit var tvPracownicyImie: TableColumn<Pracownik, String>
+    @FXML lateinit var tvPracownicyNazwisko: TableColumn<Pracownik, String>
+    @FXML lateinit var tvPracownicyAdres: TableColumn<Pracownik, String>
+    @FXML lateinit var tvPracownicyPesel: TableColumn<Pracownik, Int>
+    @FXML lateinit var tvPracownicyWyplata: TableColumn<Pracownik?, String?>
+    @FXML lateinit var tvPracownicyEdytuj: TableColumn<Pracownik, Button>
+    @FXML lateinit var tvPracownicyUsun: TableColumn<Pracownik, Button>
 
-    @FXML
-    lateinit var tvMagazynyId: TableColumn<Magazyn, Int>
+    @FXML lateinit var tvProdukty: TableView<Produkt>
 
-    @FXML
-    lateinit var tvMagazynyMiejsce: TableColumn<Magazyn, String>
+    @FXML lateinit var tvProduktyId: TableColumn<Produkt, Int>
+    @FXML lateinit var tvProduktyNazwa: TableColumn<Produkt, String>
+    @FXML lateinit var tvProduktyCena: TableColumn<Produkt?, String?>
+    @FXML lateinit var tvProduktyIlosc: TableColumn<Produkt, Int>
+    @FXML lateinit var tvProduktyEdytuj: TableColumn<Produkt, Button>
+    @FXML lateinit var tvProduktyUsun: TableColumn<Produkt, Button>
 
-    @FXML
-    lateinit var tvMagazynyNazwa: TableColumn<Magazyn, String>
+    @FXML lateinit var tvZamowienia: TableView<Zamowienie>
 
-    @FXML
-    lateinit var tvMagazynyUsun: TableColumn<Magazyn, Button>
+    @FXML lateinit var tvZamowieniaId: TableColumn<Zamowienie, Int>
+    @FXML lateinit var tvZamowieniaKlient: TableColumn<Zamowienie, Int>
+    @FXML lateinit var tvZamowieniaCena: TableColumn<Zamowienie?, String?>
+    @FXML lateinit var tvZamowieniaStatus: TableColumn<Zamowienie, String>
+    @FXML lateinit var tvZamowieniaPracownik: TableColumn<Zamowienie, Int>
+    @FXML lateinit var tvZamowieniaSzczegoly: TableColumn<Zamowienie, Button>
+    @FXML lateinit var tvZamowieniaEdytuj: TableColumn<Zamowienie, Button>
+    @FXML lateinit var tvZamowieniaAnuluj: TableColumn<Zamowienie, Button>
 
-    @FXML
-    lateinit var tvKlienci: TableView<Klient>
-
-    @FXML
-    lateinit var tvKlienciId: TableColumn<Klient, Int>
-
-    @FXML
-    lateinit var tvKlienciImie: TableColumn<Klient, String>
-
-    @FXML
-    lateinit var tvKlienciNazwisko: TableColumn<Klient, String>
-
-    @FXML
-    lateinit var tvKlienciPesel: TableColumn<Klient, Int>
-
-    @FXML
-    lateinit var tvKlienciAddOrder: TableColumn<Klient, Button>
-
-    @FXML
-    lateinit var tvKlienciUsun: TableColumn<Klient, Button>
-
-    @FXML
-    lateinit var tvPracownicy: TableView<Pracownik>
-
-    @FXML
-    lateinit var tvPracownicyId: TableColumn<Pracownik, Int>
-
-    @FXML
-    lateinit var tvPracownicyMagazyn: TableColumn<Pracownik?, String?>
-
-    @FXML
-    lateinit var tvPracownicyImie: TableColumn<Pracownik, String>
-
-    @FXML
-    lateinit var tvPracownicyNazwisko: TableColumn<Pracownik, String>
-
-    @FXML
-    lateinit var tvPracownicyAdres: TableColumn<Pracownik, String>
-
-    @FXML
-    lateinit var tvPracownicyPesel: TableColumn<Pracownik, Int>
-
-    @FXML
-    lateinit var tvPracownicyWyplata: TableColumn<Pracownik?, String?>
-
-    @FXML
-    lateinit var tvPracownicyUsun: TableColumn<Pracownik, Button>
-
-    @FXML
-    lateinit var tvProdukty: TableView<Produkt>
-
-    @FXML
-    lateinit var tvProduktyId: TableColumn<Produkt, Int>
-
-    @FXML
-    lateinit var tvProduktyNazwa: TableColumn<Produkt, String>
-
-    @FXML
-    lateinit var tvProduktyCena: TableColumn<Produkt?, String?>
-
-    @FXML
-    lateinit var tvProduktyIlosc: TableColumn<Produkt, Int>
-
-    @FXML
-    lateinit var tvProduktyUsun: TableColumn<Produkt, Button>
-
-    @FXML
-    lateinit var tvZamowienia: TableView<Zamowienie>
-
-    @FXML
-    lateinit var tvZamowieniaId: TableColumn<Zamowienie, Int>
-
-    @FXML
-    lateinit var tvZamowieniaKlient: TableColumn<Zamowienie, Int>
-
-    @FXML
-    lateinit var tvZamowieniaCena: TableColumn<Zamowienie?, String?>
-
-    @FXML
-    lateinit var tvZamowieniaStatus: TableColumn<Zamowienie, String>
-
-    @FXML
-    lateinit var tvZamowieniaPracownik: TableColumn<Zamowienie, Int>
-
-    @FXML
-    lateinit var tvZamowieniaSzczegoly: TableColumn<Zamowienie, Button>
-
-    @FXML
-    lateinit var tvZamowieniaAnuluj: TableColumn<Zamowienie, Button>
-
-    @FXML
-    lateinit var btnToggleOrders: Button
+    @FXML lateinit var btnToggleOrders: Button
 
     private lateinit var dbConn: DBConn
     @FXML
@@ -235,6 +168,19 @@ class BazyController : Initializable {
         tvMagazynyId.cellValueFactory = PropertyValueFactory("idMagazynu")
         tvMagazynyMiejsce.cellValueFactory = PropertyValueFactory("miejsce")
         tvMagazynyNazwa.cellValueFactory = PropertyValueFactory("nazwa")
+        tvMagazynyEdytuj.setCellFactory {
+            val btnEdit = Button("Edytuj")
+            val editCell = object : TableCell<Magazyn, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnEdit
+                }
+            }
+            btnEdit.setOnAction {
+                showDetailWindow(DetailWindowType.MAGAZYN, editCell.tableRow.item.idMagazynu)
+            }
+            editCell
+        }
         tvMagazynyUsun.setCellFactory {
             val btnDel = Button("Usuń")
             val delCell: TableCell<Magazyn, Button?> = object : TableCell<Magazyn, Button?>() {
@@ -275,6 +221,19 @@ class BazyController : Initializable {
             }
 
             addCell
+        }
+        tvKlienciEdytuj.setCellFactory {
+            val btnEdit = Button("Edytuj")
+            val editCell = object : TableCell<Klient, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnEdit
+                }
+            }
+            btnEdit.setOnAction {
+                showDetailWindow(DetailWindowType.KLIENT, editCell.tableRow.item.idKlienta)
+            }
+            editCell
         }
         tvKlienciUsun.setCellFactory {
             val btnDel = Button("Usuń")
@@ -326,6 +285,19 @@ class BazyController : Initializable {
             val finalVal = `val`
             Bindings.createStringBinding({ finalVal })
         }
+        tvPracownicyEdytuj.setCellFactory {
+            val btnEdit = Button("Edytuj")
+            val editCell = object : TableCell<Pracownik, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnEdit
+                }
+            }
+            btnEdit.setOnAction {
+                showDetailWindow(DetailWindowType.PRACOWNIK, editCell.tableRow.item.idPracownika)
+            }
+            editCell
+        }
         tvPracownicyUsun.setCellFactory {
             val btnDel = Button("Usuń")
             val delCell: TableCell<Pracownik, Button?> = object : TableCell<Pracownik, Button?>() {
@@ -364,6 +336,19 @@ class BazyController : Initializable {
             Bindings.createStringBinding({ finalVal })
         }
         tvProduktyIlosc.cellValueFactory = PropertyValueFactory("ilosc")
+        tvProduktyEdytuj.setCellFactory {
+            val btnEdit = Button("Edytuj")
+            val editCell = object: TableCell<Produkt, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnEdit
+                }
+            }
+            btnEdit.setOnAction {
+                showDetailWindow(DetailWindowType.PRODUKT, editCell.tableRow.item.idProduktu)
+            }
+            editCell
+        }
         tvProduktyUsun.setCellFactory {
             val btnDel = Button("Usuń")
             val delCell: TableCell<Produkt, Button?> = object : TableCell<Produkt, Button?>() {
@@ -422,6 +407,19 @@ class BazyController : Initializable {
                 detailWindow.show()
             }
             detailCell
+        }
+        tvZamowieniaEdytuj.setCellFactory {
+            val btnEdit = Button("Edytuj")
+            val editCell = object: TableCell<Zamowienie, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnEdit
+                }
+            }
+            btnEdit.setOnAction {
+                showDetailWindow(DetailWindowType.ZAMOWIENIE, editCell.tableRow.item.idZamowienia, showingHistorical)
+            }
+            editCell
         }
         tvZamowieniaAnuluj.setCellFactory {
             val btnDel = Button("Usuń")
@@ -570,9 +568,9 @@ class BazyController : Initializable {
         KLIENT, MAGAZYN, PRACOWNIK, PRODUKT, ZAMOWIENIE
     }
 
-    fun showDetailWindow(type: DetailWindowType) {
+    fun showDetailWindow(type: DetailWindowType, id: Int? = null, showingHistorical: Boolean = false) {
         val detailLoader = FXMLLoader(javaClass.getResource("detail-view.fxml"))
-        val detailController = DetailWindowController(type, dbConn)
+        val detailController = DetailWindowController(this, type, dbConn, id, showingHistorical)
         detailLoader.setController(detailController)
         val stage = Stage()
         val scene = Scene(detailLoader.load(), 640.0, 480.0)

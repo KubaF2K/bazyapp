@@ -6,11 +6,12 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.stage.Stage
+import org.example.bazyapp.AddEdit.AddOrderController
 import org.example.bazyapp.models.Produkt
 import java.net.URL
 import java.util.*
 
-class ProductSelectorController(private val root: AddOrderController): Initializable {
+class ProductSelectorController(private val parent: AddOrderController): Initializable {
     @FXML lateinit var tvProdukty: TableView<Produkt>
 
     @FXML lateinit var tvProduktyId: TableColumn<Produkt, Int>
@@ -74,14 +75,14 @@ class ProductSelectorController(private val root: AddOrderController): Initializ
             }
             addCell
         }
-        tvProdukty.items = root.root.produktyList
+        tvProdukty.items = parent.parent.produktyList
     }
 
     fun refreshList() {
         var listString = ""
         for (item in itemSet) {
             listString += """
-                ${root.root.produkty[item.key]?.nazwa ?: ("Nieznany produkt o id " + item.key)}: ${item.value} sztuk
+                ${parent.parent.produkty[item.key]?.nazwa ?: ("Nieznany produkt o id " + item.key)}: ${item.value} sztuk
                     
             """.trimIndent()
         }
@@ -93,7 +94,7 @@ class ProductSelectorController(private val root: AddOrderController): Initializ
         val returnArray = Array<Array<Any>>(itemSet.size) { emptyArray() }
         for (item in itemSet)
             returnArray[i++] = arrayOf(item.key, item.value)
-        root.itemsTable = returnArray
+        parent.itemsTable = returnArray
         (tvProdukty.scene.window as Stage).close()
     }
 }

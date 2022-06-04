@@ -74,7 +74,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
         return deliveries
     }
-
+    // Create
     fun addDelivery(produktId: Int, magazynId: Int, pracownikId: Int, ilosc: Int) {
         val pds = dataSource
         try {
@@ -100,20 +100,16 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delMagazyn(id: Int) {
-
+    fun addZamowienie(id: Int, items: Array<Array<Any>>) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-
-                val query = "CALL P_DELETE.DELETE_MAGAZYNY(?)"
+                val itemArray = (conn as OracleConnection).createOracleArray("P_TYPES.T_ITEM", items)
+                val query = "{ call P_ADD.ADD_ZAMOWIENIE(?, ?) }"
                 val stmt = conn.prepareCall(query)
                 stmt.setInt(1, id)
+                stmt.setArray(2, itemArray)
                 stmt.execute()
-                val alert = Alert(Alert.AlertType.INFORMATION)
-                alert.title = "Sukces"
-                alert.headerText = "Usunięto magazyn z bazy!"
-                alert.show()
             }
         } catch (e: SQLException) {
             val error = Alert(Alert.AlertType.ERROR)
@@ -124,104 +120,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delKlient(id: Int) {
-        if (checkDeliveries(id) == 0)
-            try {
-                dataSource.connection.use { conn ->
-                    conn.autoCommit = false
-                    val query = "CALL P_DELETE.DELETE_KLIENCI(?)"
-                    val stmt = conn.prepareCall(query)
-                    stmt.setInt(1, id)
-                    stmt.execute()
-                    val alert = Alert(Alert.AlertType.INFORMATION)
-                    alert.title = "Sukces"
-                    alert.headerText = "Usunięto klienta z bazy!"
-                    alert.show()
-                }
-            } catch (e: SQLException) {
-                val error = Alert(Alert.AlertType.ERROR)
-                error.title = "Błąd!"
-                error.headerText = "Błąd połączenia z bazą!"
-                error.contentText = e.message
-                error.show()
-            }
-        else {
-            val alert = Alert(Alert.AlertType.WARNING)
-            alert.title = "Uwaga"
-            alert.headerText = "Klient ma aktywne zamówienia!"
-            alert.show()
-        }
-    }
-
-    fun delPracownik(id: Int) {
-        try {
-            dataSource.connection.use { conn ->
-                conn.autoCommit = false
-
-                val query = "CALL P_DELETE.DELETE_PRACOWNICY(?)"
-                val stmt = conn.prepareCall(query)
-                stmt.setInt(1, id)
-                stmt.execute()
-                val alert = Alert(Alert.AlertType.INFORMATION)
-                alert.title = "Sukces"
-                alert.headerText = "Usunięto pracownika z bazy!"
-                alert.show()
-            }
-        } catch (e: SQLException) {
-            val error = Alert(Alert.AlertType.ERROR)
-            error.title = "Błąd!"
-            error.headerText = "Błąd połączenia z bazą!"
-            error.contentText = e.message
-            error.show()
-        }
-    }
-
-    fun delProdukt(id: Int) {
-        try {
-            dataSource.connection.use { conn ->
-                conn.autoCommit = false
-
-                val query = "CALL P_DELETE.DELETE_PRODUKTY(?)"
-                val stmt = conn.prepareCall(query)
-                stmt.setInt(1, id)
-                stmt.execute()
-                val alert = Alert(Alert.AlertType.INFORMATION)
-                alert.title = "Sukces"
-                alert.headerText = "Usunięto produkt z bazy!"
-                alert.show()
-            }
-        } catch (e: SQLException) {
-            val error = Alert(Alert.AlertType.ERROR)
-            error.title = "Błąd!"
-            error.headerText = "Błąd połączenia z bazą!"
-            error.contentText = e.message
-            error.show()
-        }
-    }
-
-    fun delZamowienie(id: Int) {
-        try {
-            dataSource.connection.use { conn ->
-                conn.autoCommit = false
-
-                val query = "CALL P_DELETE.DELETE_ZAMOWIENIA(?)"
-                val stmt = conn.prepareCall(query)
-                stmt.setInt(1, id)
-                stmt.execute()
-                val alert = Alert(Alert.AlertType.INFORMATION)
-                alert.title = "Sukces"
-                alert.headerText = "Usunięto zamówienie z bazy!"
-                alert.show()
-            }
-        } catch (e: SQLException) {
-            val error = Alert(Alert.AlertType.ERROR)
-            error.title = "Błąd!"
-            error.headerText = "Błąd połączenia z bazą!"
-            error.contentText = e.message
-            error.show()
-        }
-    }
-
+    //Read
     fun getKlient(id: Int): Klient? {
         try {
             dataSource.connection.use { conn ->
@@ -696,19 +595,223 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyList()
     }
 
-    fun addZamowienie(id: Int, items: Array<Array<Any>>) {
+    //Update
+    fun editKlient(id: Int, nazwisko: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
-//                val structList = LinkedList<OracleStruct>()
-//                for (item in items)
-//                    structList.add(conn.createStruct("P_TYPES.T_ITEM", item) as OracleStruct)
-                val itemArray = (conn as OracleConnection).createOracleArray("P_TYPES.T_ITEM", items)
-                val query = "{ call P_ADD.ADD_ZAMOWIENIE(?, ?) }"
+                val query = "CALL P_UPDATE.UPDATE_KLIENCI(?, ?)"
                 val stmt = conn.prepareCall(query)
                 stmt.setInt(1, id)
-                stmt.setArray(2, itemArray)
+                stmt.setString(2, nazwisko)
                 stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun editMagazyn(id: Int, nazwa: String) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_UPDATE.UPDATE_MAGAZYNY(?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.setString(2, nazwa)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun editPracownik(
+        id: Int,
+        idMagazynu: Int? = null,
+        nazwisko: String? = null,
+        adres: String? = null,
+        wyplata: Int? = null
+    ) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_UPDATE.UPDATE_PRACOWNICY(?, ?, ?, ?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.setInt(2, idMagazynu ?: 0)
+                stmt.setString(3, nazwisko)
+                stmt.setString(4, adres)
+                stmt.setInt(5, wyplata ?: 0)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun editProdukt(id: Int, cena: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_UPDATE.UPDATE_PRODUKTY(?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.setInt(2, cena)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun editZamowienie(id: Int, status: String) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_UPDATE.UPDATE_ZAMOWIENIA(?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.setString(2, status)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    //Delete
+    fun delMagazyn(id: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+
+                val query = "CALL P_DELETE.DELETE_MAGAZYNY(?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.execute()
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Sukces"
+                alert.headerText = "Usunięto magazyn z bazy!"
+                alert.show()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun delKlient(id: Int) {
+        if (checkDeliveries(id) == 0)
+            try {
+                dataSource.connection.use { conn ->
+                    conn.autoCommit = false
+                    val query = "CALL P_DELETE.DELETE_KLIENCI(?)"
+                    val stmt = conn.prepareCall(query)
+                    stmt.setInt(1, id)
+                    stmt.execute()
+                    val alert = Alert(Alert.AlertType.INFORMATION)
+                    alert.title = "Sukces"
+                    alert.headerText = "Usunięto klienta z bazy!"
+                    alert.show()
+                }
+            } catch (e: SQLException) {
+                val error = Alert(Alert.AlertType.ERROR)
+                error.title = "Błąd!"
+                error.headerText = "Błąd połączenia z bazą!"
+                error.contentText = e.message
+                error.show()
+            }
+        else {
+            val alert = Alert(Alert.AlertType.WARNING)
+            alert.title = "Uwaga"
+            alert.headerText = "Klient ma aktywne zamówienia!"
+            alert.show()
+        }
+    }
+
+    fun delPracownik(id: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+
+                val query = "CALL P_DELETE.DELETE_PRACOWNICY(?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.execute()
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Sukces"
+                alert.headerText = "Usunięto pracownika z bazy!"
+                alert.show()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun delProdukt(id: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+
+                val query = "CALL P_DELETE.DELETE_PRODUKTY(?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.execute()
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Sukces"
+                alert.headerText = "Usunięto produkt z bazy!"
+                alert.show()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun delZamowienie(id: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+
+                val query = "CALL P_DELETE.DELETE_ZAMOWIENIA(?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.execute()
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Sukces"
+                alert.headerText = "Usunięto zamówienie z bazy!"
+                alert.show()
             }
         } catch (e: SQLException) {
             val error = Alert(Alert.AlertType.ERROR)

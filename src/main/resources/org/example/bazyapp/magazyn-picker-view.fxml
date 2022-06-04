@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+
+<TableView xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="400.0" prefWidth="600.0"
+            fx:id="tvMagazyny">
+    <columns>
+        <TableColumn minWidth="150" text="ID" fx:id="tvMagazynyId"/>
+        <TableColumn minWidth="150" text="Miejsce" fx:id="tvMagazynyMiejsce"/>
+        <TableColumn minWidth="150" text="Nazwa" fx:id="tvMagazynyNazwa"/>
+        <TableColumn minWidth="150" text="Usuń" fx:id="tvMagazynyWybierz"/>
+    </columns>
+</TableView>

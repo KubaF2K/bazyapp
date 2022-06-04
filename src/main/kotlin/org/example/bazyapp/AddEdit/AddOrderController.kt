@@ -1,4 +1,4 @@
-package org.example.bazyapp
+package org.example.bazyapp.AddEdit
 
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -9,10 +9,13 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.stage.Stage
+import org.example.bazyapp.BazyController
+import org.example.bazyapp.DBConn
+import org.example.bazyapp.ProductSelectorController
 import java.net.URL
 import java.util.*
 
-class AddOrderController (val root: BazyController, private val dbConn: DBConn, private var idKlienta: Int? = null): Initializable {
+class AddOrderController (val parent: BazyController, private val dbConn: DBConn, private var idKlienta: Int? = null): Initializable {
     @FXML lateinit var txtFldId: TextField
     @FXML lateinit var lblItem: Label
     @FXML lateinit var btnAdd: Button
@@ -23,7 +26,7 @@ class AddOrderController (val root: BazyController, private val dbConn: DBConn, 
             var itemString = ""
             for (pair in itemsTable) {
                 itemString += """
-                    ${root.produkty[pair[0]]?.nazwa ?: ("Nieznany produkt o id " + pair[0])}: ${pair[1]} sztuk
+                    ${parent.produkty[pair[0]]?.nazwa ?: ("Nieznany produkt o id " + pair[0])}: ${pair[1]} sztuk
                     
                 """.trimIndent()
             }
@@ -54,7 +57,7 @@ class AddOrderController (val root: BazyController, private val dbConn: DBConn, 
             if (itemsTable.isEmpty() || idKlienta == null)
                 return
             dbConn.addZamowienie(idKlienta!!, itemsTable)
-            root.refresh()
+            parent.refresh()
             (txtFldId.scene.window as Stage).close()
         } catch (e: NumberFormatException) {
             val alert = Alert(Alert.AlertType.WARNING)
