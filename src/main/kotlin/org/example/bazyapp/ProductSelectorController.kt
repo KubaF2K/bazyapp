@@ -5,7 +5,6 @@ import javafx.fxml.FXML
 import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
-import javafx.scene.layout.HBox
 import javafx.stage.Stage
 import org.example.bazyapp.models.Produkt
 import java.net.URL
@@ -18,7 +17,9 @@ class ProductSelectorController(private val root: AddOrderController): Initializ
     @FXML lateinit var tvProduktyNazwa: TableColumn<Produkt, String>
     @FXML lateinit var tvProduktyCena: TableColumn<Produkt, String>
     @FXML lateinit var tvProduktyIlosc: TableColumn<Produkt, Int>
-    @FXML lateinit var tvProduktyDodaj: TableColumn<Produkt, HBox>
+    @FXML lateinit var tvProduktyDodaj: TableColumn<Produkt, Button>
+
+    @FXML lateinit var lblList: Label
 
     val itemSet = HashMap<Int, Int>()
 
@@ -41,25 +42,27 @@ class ProductSelectorController(private val root: AddOrderController): Initializ
 //        TODO fix weird textbox and button behavior
         tvProduktyIlosc.cellValueFactory = PropertyValueFactory("ilosc")
         tvProduktyDodaj.setCellFactory {
-            val cellBox = HBox(10.0)
-            val btnAdd = Button("Dodaj")
-            val txtFldCount = TextField("0")
-            cellBox.children.addAll(btnAdd, txtFldCount)
-            val addCell = object : TableCell<Produkt, HBox?>() {
-                var selected = false
-                override fun updateItem(p0: HBox?, p1: Boolean) {
+            val btnAdd = Button("Dodaj/Usuń")
+            val addCell = object : TableCell<Produkt, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
                     super.updateItem(p0, p1)
-                    graphic = if (p1 || tableRow.item == null) null else cellBox
+                    graphic = if (p1 || tableRow.item == null) null else btnAdd
                 }
             }
             btnAdd.setOnAction {
                 val id = addCell.tableRow.item.idProduktu
-                if (!addCell.selected) {
+                if (itemSet.containsKey(id)) {
+                    itemSet.remove(id)
+                    refreshList()
+                }
+                else {
                     try {
-                        val count = txtFldCount.text.toInt()
+                        val inputDialog = TextInputDialog()
+                        inputDialog.title = "Ilość"
+                        inputDialog.headerText = "Podaj ilość:"
+                        val count = inputDialog.showAndWait().get().toInt()
                         itemSet[id] = count
-                        addCell.selected = true
-                        btnAdd.text = "Usuń"
+                        refreshList()
                     } catch (e: NumberFormatException) {
                         val alert = Alert(Alert.AlertType.WARNING)
                         alert.title = "Błąd!"
@@ -68,15 +71,21 @@ class ProductSelectorController(private val root: AddOrderController): Initializ
                         alert.showAndWait()
                     }
                 }
-                else {
-                    itemSet.remove(id)
-                    addCell.selected = false
-                    btnAdd.text = "Dodaj"
-                }
             }
             addCell
         }
         tvProdukty.items = root.root.produktyList
+    }
+
+    fun refreshList() {
+        var listString = ""
+        for (item in itemSet) {
+            listString += """
+                ${root.root.produkty[item.key]?.nazwa ?: ("Nieznany produkt o id " + item.key)}: ${item.value} sztuk
+                    
+            """.trimIndent()
+        }
+        lblList.text = listString
     }
 
     fun returnBack() {
