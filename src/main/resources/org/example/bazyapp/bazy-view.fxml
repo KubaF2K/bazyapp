@@ -14,6 +14,7 @@
             </Menu>
             <Menu text="Dodaj">
                 <MenuItem text="Dostawa" onAction="#showAddDeliveryWindow"/>
+                <MenuItem text="Zamówienie" onAction="#showAddOrderWindow"/>
             </Menu>
             <Menu text="Wyświetl">
                 <MenuItem text="Klient" onAction="#showClientDetailWindow"/>
@@ -55,6 +56,7 @@
                         <TableColumn minWidth="150" text="Imię" fx:id="tvKlienciImie"/>
                         <TableColumn minWidth="150" text="Nazwisko" fx:id="tvKlienciNazwisko"/>
                         <TableColumn minWidth="150" text="PESEL" fx:id="tvKlienciPesel"/>
+                        <TableColumn minWidth="150" text="Dodaj zamówienie" fx:id="tvKlienciAddOrder"/>
                         <TableColumn minWidth="150" text="Usuń" fx:id="tvKlienciUsun"/>
                     </columns>
                 </TableView>

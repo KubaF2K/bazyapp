@@ -93,6 +93,9 @@ class BazyController : Initializable {
     lateinit var tvKlienciPesel: TableColumn<Klient, Int>
 
     @FXML
+    lateinit var tvKlienciAddOrder: TableColumn<Klient, Button>
+
+    @FXML
     lateinit var tvKlienciUsun: TableColumn<Klient, Button>
 
     @FXML
@@ -259,6 +262,20 @@ class BazyController : Initializable {
         tvKlienciImie.cellValueFactory = PropertyValueFactory("imie")
         tvKlienciNazwisko.cellValueFactory = PropertyValueFactory("nazwisko")
         tvKlienciPesel.cellValueFactory = PropertyValueFactory("pesel")
+        tvKlienciAddOrder.setCellFactory {
+            val btnAdd = Button("Dodaj zamówienie")
+            val addCell = object : TableCell<Klient, Button?>() {
+                override fun updateItem(p0: Button?, p1: Boolean) {
+                    super.updateItem(p0, p1)
+                    graphic = if (p1 || tableRow.item == null) null else btnAdd
+                }
+            }
+            btnAdd.setOnAction {
+                showAddOrderWindow(addCell.tableRow.item.idKlienta)
+            }
+
+            addCell
+        }
         tvKlienciUsun.setCellFactory {
             val btnDel = Button("Usuń")
             val delCell: TableCell<Klient, Button?> = object : TableCell<Klient, Button?>() {
@@ -528,6 +545,21 @@ class BazyController : Initializable {
         addDeliveryWindow.scene = scene
         addDeliveryWindow.title = "Dodawanie dostawy"
         addDeliveryWindow.show()
+    }
+
+    fun showAddOrderWindow(id: Int?) {
+        val addOrderWindow = Stage()
+        addOrderWindow.title = "Dodawanie zamówienia"
+        val loader = FXMLLoader(javaClass.getResource("add-order-view.fxml"))
+        val addOrderController = AddOrderController(this, dbConn, id)
+        loader.setController(addOrderController)
+        val scene = Scene(loader.load(), 600.0, 400.0)
+        addOrderWindow.scene = scene
+        addOrderWindow.show()
+    }
+
+    fun showAddOrderWindow() {
+        showAddOrderWindow(null)
     }
 
     fun exit() {

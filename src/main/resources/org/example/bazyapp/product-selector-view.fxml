@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="400.0" prefWidth="600.0">
+    <Button text="Gotowe" onAction="#returnBack"/>
+    <TableView fx:id="tvProdukty">
+        <columns>
+            <TableColumn minWidth="150" text="ID" fx:id="tvProduktyId"/>
+            <TableColumn minWidth="150" text="Nazwa" fx:id="tvProduktyNazwa"/>
+            <TableColumn minWidth="150" text="Cena" fx:id="tvProduktyCena"/>
+            <TableColumn minWidth="150" text="Ilość" fx:id="tvProduktyIlosc"/>
+            <TableColumn minWidth="150" text="Dodaj" fx:id="tvProduktyDodaj"/>
+        </columns>
+    </TableView>
+</VBox>

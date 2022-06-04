@@ -1,6 +1,7 @@
 package org.example.bazyapp
 
 import javafx.scene.control.Alert
+import oracle.jdbc.OracleConnection
 import oracle.jdbc.OracleStruct
 import oracle.ucp.jdbc.PoolDataSource
 import oracle.ucp.jdbc.PoolDataSourceFactory
@@ -693,5 +694,28 @@ class DBConn (private val DB_PASSWORD: String) {
             error.show()
         }
         return emptyList()
+    }
+
+    fun addZamowienie(id: Int, items: Array<Array<Any>>) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+//                val structList = LinkedList<OracleStruct>()
+//                for (item in items)
+//                    structList.add(conn.createStruct("P_TYPES.T_ITEM", item) as OracleStruct)
+                val itemArray = (conn as OracleConnection).createOracleArray("P_TYPES.T_ITEM", items)
+                val query = "{ call P_ADD.ADD_ZAMOWIENIE(?, ?) }"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, id)
+                stmt.setArray(2, itemArray)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
     }
 }

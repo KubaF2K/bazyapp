@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            prefHeight="400.0" prefWidth="600.0">
+    <HBox spacing="10.0">
+        <Label>ID klienta:</Label>
+        <TextField fx:id="txtFldId"/>
+    </HBox>
+    <Label fx:id="lblItem"/>
+    <Button text="Wybierz produkty" onAction="#showItemSelection"/>
+    <Button fx:id="btnAdd" text="Dodaj" onAction="#add" disable="true"/>
+
+</VBox>
