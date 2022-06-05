@@ -16,7 +16,7 @@ import java.util.Scanner;
 public class BazyApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader bazyLoader = new FXMLLoader(BazyApplication.class.getResource("bazy-view.fxml"));
+        FXMLLoader bazyLoader = new FXMLLoader(BazyApplication.class.getResource("base-view.fxml"));
         Scene scene = new Scene(bazyLoader.load(), 800, 600);
         stage.setTitle("Magazyn");
         stage.setScene(scene);

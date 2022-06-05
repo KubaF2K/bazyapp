@@ -74,38 +74,14 @@ class DBConn (private val DB_PASSWORD: String) {
         }
         return deliveries
     }
-    // Create
-    fun addDelivery(produktId: Int, magazynId: Int, pracownikId: Int, ilosc: Int) {
-        val pds = dataSource
-        try {
-            pds.connection.use { conn ->
-                conn.autoCommit = false
-                val query = "CALL ADD_NEW_TO_DOSTAWY(?, ?, ?, ?)"
-                val stmt = conn.prepareCall(query)
-                stmt.setInt(1, produktId)
-                stmt.setInt(2, magazynId)
-                stmt.setInt(3, pracownikId)
-                stmt.setInt(4, ilosc)
-                stmt.execute()
-                val alert = Alert(Alert.AlertType.CONFIRMATION)
-                alert.headerText = "Dodano dostawę do bazy!"
-                alert.showAndWait()
-            }
-        } catch (e: SQLException) {
-            val alert = Alert(Alert.AlertType.ERROR)
-            alert.title = "Błąd!"
-            alert.headerText = "Błąd połączenia z bazą!"
-            alert.contentText = e.message
-            alert.show()
-        }
-    }
 
-    fun addZamowienie(id: Int, items: Array<Array<Any>>) {
+    // Create
+    fun addOrder(id: Int, items: Array<Array<Any>>) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
                 val itemArray = (conn as OracleConnection).createOracleArray("P_TYPES.T_ITEM", items)
-                val query = "{ call P_ADD.ADD_ZAMOWIENIE(?, ?) }"
+                val query = "CALL P_ADD.ADD_ZAMOWIENIE(?, ?)"
                 val stmt = conn.prepareCall(query)
                 stmt.setInt(1, id)
                 stmt.setArray(2, itemArray)
@@ -120,8 +96,90 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
+    fun addWarehouse(address: String, name: String) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_ADD.ADD_MAGAZYN(?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setString(1, address)
+                stmt.setString(2, name)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun addClient(name: String, surname: String, pesel: Long) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_ADD.ADD_KLIENT(?, ?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setString(1, name)
+                stmt.setString(2, surname)
+                stmt.setLong(3, pesel)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun addProduct(name: String, price: Int, count: Int = 0) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_ADD.ADD_PRODUKT(?, ?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setString(1, name)
+                stmt.setInt(2, price)
+                stmt.setInt(3, count)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
+    fun addWorker(magazynId: Int, name: String, surname: String, address: String, pesel: Long, payout: Int) {
+        try {
+            dataSource.connection.use { conn ->
+                conn.autoCommit = false
+                val query = "CALL P_ADD.ADD_PRACOWNIK(?, ?, ?, ?, ?, ?)"
+                val stmt = conn.prepareCall(query)
+                stmt.setInt(1, magazynId)
+                stmt.setString(2, name)
+                stmt.setString(3, surname)
+                stmt.setString(4, address)
+                stmt.setLong(5, pesel)
+                stmt.setInt(6, payout)
+                stmt.execute()
+            }
+        } catch (e: SQLException) {
+            val error = Alert(Alert.AlertType.ERROR)
+            error.title = "Błąd!"
+            error.headerText = "Błąd połączenia z bazą!"
+            error.contentText = e.message
+            error.show()
+        }
+    }
+
     //Read
-    fun getKlient(id: Int): Klient? {
+    fun getClient(id: Int): Klient? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -147,7 +205,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getMagazyn(id: Int): Magazyn? {
+    fun getWarehouse(id: Int): Magazyn? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -172,7 +230,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getPracownik(id: Int): Pracownik? {
+    fun getWorker(id: Int): Pracownik? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -199,7 +257,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getProdukt(id: Int): Produkt? {
+    fun getProduct(id: Int): Produkt? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -225,7 +283,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getZamowienie(id: Int): Zamowienie? {
+    fun getOrder(id: Int): Zamowienie? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -252,7 +310,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getZamowienieHist(id: Int): Zamowienie? {
+    fun getOrderHistorical(id: Int): Zamowienie? {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -281,7 +339,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return null
     }
 
-    fun getDostawy(): Map<Int, Dostawa> {
+    fun getDeliveries(): Map<Int, Dostawa> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -317,7 +375,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getKlienci(): Map<Int, Klient> {
+    fun getClients(): Map<Int, Klient> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -351,7 +409,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getMagazyny(): Map<Int, Magazyn> {
+    fun getWarehouses(): Map<Int, Magazyn> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -384,7 +442,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getPracownicy(): Map<Int, Pracownik> {
+    fun getWorkers(): Map<Int, Pracownik> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -421,7 +479,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getProdukty(): Map<Int, Produkt> {
+    fun getProducts(): Map<Int, Produkt> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -455,7 +513,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getZamowienia(): Map<Int, Zamowienie> {
+    fun getOrders(): Map<Int, Zamowienie> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -490,7 +548,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getZamowieniaHist(): Map<Int, Zamowienie> {
+    fun getOrdersHistorical(): Map<Int, Zamowienie> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -525,7 +583,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyMap()
     }
 
-    fun getZamowienieSzczegoly(id: Int): List<ZamowienieSzcz> {
+    fun getOrderDetails(id: Int): List<ZamowienieSzcz> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -560,7 +618,7 @@ class DBConn (private val DB_PASSWORD: String) {
         return emptyList()
     }
 
-    fun getZamowienieHistSzczegoly(id: Int): List<ZamowienieSzcz> {
+    fun getOrderDetailsHistorical(id: Int): List<ZamowienieSzcz> {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -596,7 +654,7 @@ class DBConn (private val DB_PASSWORD: String) {
     }
 
     //Update
-    fun editKlient(id: Int, nazwisko: String) {
+    fun editClient(id: Int, nazwisko: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -615,7 +673,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun editMagazyn(id: Int, nazwa: String) {
+    fun editWarehouse(id: Int, nazwa: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -634,7 +692,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun editPracownik(
+    fun editWorker(
         id: Int,
         idMagazynu: Int? = null,
         nazwisko: String? = null,
@@ -662,7 +720,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun editProdukt(id: Int, cena: Int) {
+    fun editProduct(id: Int, cena: Int) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -681,7 +739,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun editZamowienie(id: Int, status: String) {
+    fun editOrder(id: Int, status: String) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -701,7 +759,7 @@ class DBConn (private val DB_PASSWORD: String) {
     }
 
     //Delete
-    fun delMagazyn(id: Int) {
+    fun delWarehouse(id: Int) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -724,7 +782,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delKlient(id: Int) {
+    fun delClient(id: Int) {
         if (checkDeliveries(id) == 0)
             try {
                 dataSource.connection.use { conn ->
@@ -753,7 +811,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delPracownik(id: Int) {
+    fun delWorker(id: Int) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -776,7 +834,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delProdukt(id: Int) {
+    fun delProduct(id: Int) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false
@@ -799,7 +857,7 @@ class DBConn (private val DB_PASSWORD: String) {
         }
     }
 
-    fun delZamowienie(id: Int) {
+    fun delOrder(id: Int) {
         try {
             dataSource.connection.use { conn ->
                 conn.autoCommit = false

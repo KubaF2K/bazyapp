@@ -14,8 +14,8 @@ import java.net.URL
 import java.util.*
 
 class DetailWindowController(
-    val parent: BazyController,
-    private val type: BazyController.DetailWindowType,
+    val parent: BaseController,
+    private val type: BaseController.DetailWindowType,
     private val dbConn: DBConn, private val id: Int? = null,
     private val showingHistorical: Boolean = false
 ) : Initializable {
@@ -38,7 +38,7 @@ class DetailWindowController(
 
     @FXML
     override fun initialize(p0: URL?, p1: ResourceBundle?) {
-        if (type == BazyController.DetailWindowType.ZAMOWIENIE) {
+        if (type == BaseController.DetailWindowType.ZAMOWIENIE) {
             chkHistorical.isVisible = true
             chkHistorical.isSelected = showingHistorical
         }
@@ -56,7 +56,7 @@ class DetailWindowController(
     fun display() {
         displayedId = txtFldId.text.toInt()
         when (type) {
-            BazyController.DetailWindowType.KLIENT -> {
+            BaseController.DetailWindowType.KLIENT -> {
                 val textName = Text()
                 val textPesel = Text()
                 val lblNewSurname = Label("Nowe nazwisko:")
@@ -64,7 +64,7 @@ class DetailWindowController(
                 val btnEdit = Button("Zmień nazwisko")
                 btnEdit.setOnAction {
                     if (txtFldNewSurname.text.isNotBlank()) {
-                        dbConn.editKlient(displayedId, txtFldNewSurname.text)
+                        dbConn.editClient(displayedId, txtFldNewSurname.text)
                         parent.refresh()
                         refresh()
                     }
@@ -78,7 +78,7 @@ class DetailWindowController(
                 }
                 boxOut.children.setAll(textId, textName, textPesel, lblNewSurname, txtFldNewSurname, btnEdit)
                 try {
-                    val klient = dbConn.getKlient(displayedId)
+                    val klient = dbConn.getClient(displayedId)
                     textId.text = "ID: " + (klient?.idKlienta ?: "Brak klienta o podanym ID!")
                     textName.text = "Imię i nazwisko: " + (klient?.imie ?: "") + " " + (klient?.nazwisko ?: "")
                     textPesel.text = "PESEL: " + klient?.pesel
@@ -88,7 +88,7 @@ class DetailWindowController(
                     alert.show()
                 }
             }
-            BazyController.DetailWindowType.MAGAZYN -> {
+            BaseController.DetailWindowType.MAGAZYN -> {
                 val textAddr = Text()
                 val textName = Text()
                 val lblNewName = Label("Nowa nazwa:")
@@ -96,7 +96,7 @@ class DetailWindowController(
                 val btnEdit = Button("Zmień nazwę")
                 btnEdit.setOnAction {
                     if (txtFldNewName.text.isNotBlank()) {
-                        dbConn.editMagazyn(displayedId, txtFldNewName.text)
+                        dbConn.editWarehouse(displayedId, txtFldNewName.text)
                         parent.refresh()
                         refresh()
                     }
@@ -110,7 +110,7 @@ class DetailWindowController(
                 }
                 boxOut.children.setAll(textId, textAddr, textName, lblNewName, txtFldNewName, btnEdit)
                 try {
-                    val magazyn = dbConn.getMagazyn(displayedId)
+                    val magazyn = dbConn.getWarehouse(displayedId)
                     textId.text = "ID: " + (magazyn?.idMagazynu ?: "Brak magazynu o podanym ID!")
                     textAddr.text = "Adres: " + (magazyn?.miejsce ?: "")
                     textName.text = "Nazwa: " + (magazyn?.nazwa ?: "")
@@ -120,7 +120,7 @@ class DetailWindowController(
                     alert.show()
                 }
             }
-            BazyController.DetailWindowType.PRACOWNIK -> {
+            BaseController.DetailWindowType.PRACOWNIK -> {
                 val boxMagazyn = HBox(10.0)
                 val textMagazynId = Text()
                 val btnMagazynShow = Button("Wyświetl")
@@ -134,8 +134,8 @@ class DetailWindowController(
                 btnPickNewMagazyn.setOnAction {
                     val pickerWindow = Stage()
                     pickerWindow.title = "Wybierz magazyn"
-                    val loader = FXMLLoader(javaClass.getResource("magazyn-picker-view.fxml"))
-                    val pickerController = MagazynPickerController(this)
+                    val loader = FXMLLoader(javaClass.getResource("warehouse-picker-view.fxml"))
+                    val pickerController = WarehousePickerController(this)
                     loader.setController(pickerController)
                     val scene = Scene(loader.load(), 600.0, 400.0)
                     pickerWindow.scene = scene
@@ -160,7 +160,7 @@ class DetailWindowController(
                 val btnEdit = Button("Zapisz zmiany")
                 btnEdit.setOnAction {
                     try {
-                        dbConn.editPracownik(
+                        dbConn.editWorker(
                             displayedId,
                             if (txtFldNewMagazynId.text.isNotBlank()) txtFldNewMagazynId.text.toInt() else null,
                             if (txtFldNewName.text.isNotBlank()) txtFldNewName.text else null,
@@ -179,7 +179,7 @@ class DetailWindowController(
                 boxOut.children.setAll(textId, boxMagazyn, boxNewMagazyn, textName, lblNewName, txtFldNewName, textAddr,
                     lblNewAddr, txtFldNewAddr, textPesel, textPayout, lblNewPayout, txtFldNewPayout, btnEdit)
                 try {
-                    val pracownik = dbConn.getPracownik(displayedId)
+                    val pracownik = dbConn.getWorker(displayedId)
                     textId.text = "ID: " + (pracownik?.idPracownika ?: "Brak pracownika o podanym ID!")
                     textMagazynId.text = "ID magazynu: " + (pracownik?.idMagazynu ?: "Brak magazynu o podanym ID!")
                     if (pracownik != null) {
@@ -188,7 +188,7 @@ class DetailWindowController(
                             val detailLoader = FXMLLoader(javaClass.getResource("detail-view.fxml"))
                             val detailController = DetailWindowController(
                                 parent,
-                                BazyController.DetailWindowType.MAGAZYN,
+                                BaseController.DetailWindowType.MAGAZYN,
                                 dbConn, pracownik.idMagazynu
                             )
                             detailLoader.setController(detailController)
@@ -216,7 +216,7 @@ class DetailWindowController(
                     alert.show()
                 }
             }
-            BazyController.DetailWindowType.PRODUKT -> {
+            BaseController.DetailWindowType.PRODUKT -> {
                 val textName = Text()
                 val textPrice = Text()
                 val lblNewPrice = Label("Nowa cena:")
@@ -224,7 +224,7 @@ class DetailWindowController(
                 val btnEdit = Button("Zmień cenę")
                 btnEdit.setOnAction {
                     try {
-                        dbConn.editProdukt(displayedId, (txtFldNewPrice.text.toFloat() * 100).toInt())
+                        dbConn.editProduct(displayedId, (txtFldNewPrice.text.toFloat() * 100).toInt())
                         parent.refresh()
                         refresh()
                     } catch (e: NumberFormatException) {
@@ -236,7 +236,7 @@ class DetailWindowController(
                 val textAmount = Text()
                 boxOut.children.setAll(textId, textName, textPrice, lblNewPrice, txtFldNewPrice, btnEdit, textAmount)
                 try {
-                    val produkt = dbConn.getProdukt(displayedId)
+                    val produkt = dbConn.getProduct(displayedId)
                     textId.text = "ID: " + (produkt?.idProduktu ?: "Brak produktu o podanym ID!")
                     textName.text = "Nazwa: " + (produkt?.nazwa ?: "")
                     if (produkt != null) {
@@ -253,7 +253,7 @@ class DetailWindowController(
                     alert.show()
                 }
             }
-            BazyController.DetailWindowType.ZAMOWIENIE -> {
+            BaseController.DetailWindowType.ZAMOWIENIE -> {
                 displayedHistorical = chkHistorical.isSelected
                 val boxKlient = HBox(10.0)
                 val textKlientId = Text()
@@ -277,7 +277,7 @@ class DetailWindowController(
                             val alertResult = alert.showAndWait()
                             alertResult.ifPresent { button: ButtonType ->
                                 if (button == ButtonType.YES) {
-                                    dbConn.editZamowienie(displayedId, comboNewStatus.value)
+                                    dbConn.editOrder(displayedId, comboNewStatus.value)
                                     parent.refresh()
                                     refresh()
                                 }
@@ -290,14 +290,14 @@ class DetailWindowController(
                             val alertResult = alert.showAndWait()
                             alertResult.ifPresent { button: ButtonType ->
                                 if (button == ButtonType.YES) {
-                                    dbConn.delZamowienie(displayedId)
+                                    dbConn.delOrder(displayedId)
                                     parent.refresh()
                                     refresh()
                                 }
                             }
                         }
                         else -> {
-                            dbConn.editZamowienie(displayedId, comboNewStatus.value)
+                            dbConn.editOrder(displayedId, comboNewStatus.value)
                             parent.refresh()
                             refresh()
                         }
@@ -311,15 +311,15 @@ class DetailWindowController(
                 boxPracownik.children.addAll(textPracownikId, btnPracownikShow)
 
                 val btnSzczegoly = Button("Wyświetl szczegóły")
-                if ((if (displayedHistorical) dbConn.getZamowienieHistSzczegoly(displayedId).isEmpty()
-                    else dbConn.getZamowienieSzczegoly(displayedId).isEmpty())
+                if ((if (displayedHistorical) dbConn.getOrderDetailsHistorical(displayedId).isEmpty()
+                    else dbConn.getOrderDetails(displayedId).isEmpty())
                 )   btnSzczegoly.isDisable = true
                 else
                     btnSzczegoly.setOnAction {
                         val detailWindow = Stage()
                         detailWindow.title = "Szczegóły zamówienia"
-                        val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
-                        val detailController = ZamowieniaSzczegolyController(dbConn, displayedId, displayedHistorical)
+                        val loader = FXMLLoader(javaClass.getResource("order-details-view.fxml"))
+                        val detailController = OrderDetailsController(dbConn, displayedId, displayedHistorical)
                         loader.setController(detailController)
                         val scene = Scene(loader.load(), 600.0, 400.0)
                         detailWindow.scene = scene
@@ -330,9 +330,9 @@ class DetailWindowController(
                     boxPracownik, btnSzczegoly)
                 try {
                     val zamowienie = if (displayedHistorical)
-                        dbConn.getZamowienieHist(displayedId)
+                        dbConn.getOrderHistorical(displayedId)
                     else
-                        dbConn.getZamowienie(displayedId)
+                        dbConn.getOrder(displayedId)
                     textId.text = "ID: " + (zamowienie?.idZamowienia ?: "Brak zamówienia o podanym ID!")
                     textKlientId.text = "ID Klienta: " + (zamowienie?.idKlienta ?: "Brak klienta o podanym ID!")
                     if (zamowienie != null) {
@@ -341,7 +341,7 @@ class DetailWindowController(
                             val detailLoader = FXMLLoader(javaClass.getResource("detail-view.fxml"))
                             val detailController = DetailWindowController(
                                 parent,
-                                BazyController.DetailWindowType.KLIENT,
+                                BaseController.DetailWindowType.KLIENT,
                                 dbConn, zamowienie.idKlienta
                             )
                             detailLoader.setController(detailController)
@@ -366,7 +366,7 @@ class DetailWindowController(
                             val detailLoader = FXMLLoader(javaClass.getResource("detail-view.fxml"))
                             val detailController = DetailWindowController(
                                 parent,
-                                BazyController.DetailWindowType.PRACOWNIK,
+                                BaseController.DetailWindowType.PRACOWNIK,
                                 dbConn, zamowienie.idPracownika
                             )
                             detailLoader.setController(detailController)

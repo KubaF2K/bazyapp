@@ -5,11 +5,12 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.stage.Stage
+import org.example.bazyapp.addEdit.AddWorkerController
 import org.example.bazyapp.models.Magazyn
 import java.net.URL
 import java.util.*
 
-class MagazynPickerController(val parent: DetailWindowController): Initializable {
+class WarehousePickerController(val parent: Any): Initializable {
 
     @FXML lateinit var tvMagazyny: TableView<Magazyn>
 
@@ -32,11 +33,17 @@ class MagazynPickerController(val parent: DetailWindowController): Initializable
                 }
             }
             btnPick.setOnAction {
-                parent.txtFldNewMagazynId.text = pickCell.tableRow.item.idMagazynu.toString()
+                if (parent is DetailWindowController)
+                    parent.txtFldNewMagazynId.text = pickCell.tableRow.item.idMagazynu.toString()
+                else if (parent is AddWorkerController)
+                    parent.txtFldWarehouseId.text = pickCell.tableRow.item.idMagazynu.toString()
                 (tvMagazyny.scene.window as Stage).close()
             }
             pickCell
         }
-        tvMagazyny.items = parent.parent.magazynyList
+        if (parent is DetailWindowController)
+            tvMagazyny.items = parent.parent.magazynyList
+        if (parent is AddWorkerController)
+            tvMagazyny.items = parent.parent.magazynyList
     }
 }

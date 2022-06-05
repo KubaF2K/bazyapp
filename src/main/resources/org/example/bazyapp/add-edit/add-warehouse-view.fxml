@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      prefHeight="400.0" prefWidth="600.0" spacing="10">
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+    <HBox spacing="10">
+        <Label>Adres:</Label>
+        <TextField fx:id="txtFldAddress"/>
+    </HBox>
+    <HBox spacing="10">
+        <Label>Nazwa:</Label>
+        <TextField fx:id="txtFldName"/>
+    </HBox>
+    <Button text="Dodaj" onAction="#add"/>
+</VBox>

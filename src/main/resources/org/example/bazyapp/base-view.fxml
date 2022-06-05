@@ -5,7 +5,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.bazyapp.BazyController">
+            fx:controller="org.example.bazyapp.BaseController">
     <top>
         <MenuBar>
             <Menu text="Plik">
@@ -13,8 +13,11 @@
                 <MenuItem text="Wyjdź" onAction="#exit"/>
             </Menu>
             <Menu text="Dodaj">
-                <MenuItem text="Dostawa" onAction="#showAddDeliveryWindow"/>
                 <MenuItem text="Zamówienie" onAction="#showAddOrderWindow"/>
+                <MenuItem text="Magazyn" onAction="#showAddMagazynWindow"/>
+                <MenuItem text="Klient" onAction="#showAddKlientWindow"/>
+                <MenuItem text="Produkt" onAction="#showAddProductWindow"/>
+                <MenuItem text="Pracownik" onAction="#showAddWorkerWindow"/>
             </Menu>
             <Menu text="Edytuj">
                 <MenuItem text="Klient" onAction="#showClientDetailWindow"/>

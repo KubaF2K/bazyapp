@@ -11,7 +11,7 @@ import org.example.bazyapp.models.ZamowienieSzcz
 import java.net.URL
 import java.util.*
 
-class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int, val showingHistorical: Boolean = false): Initializable {
+class OrderDetailsController(val dbConn: DBConn, val id: Int, val showingHistorical: Boolean = false): Initializable {
     @FXML lateinit var tvZamowieniaSzcz: TableView<ZamowienieSzcz>
     @FXML lateinit var tvZamowieniaSzczId: TableColumn<ZamowienieSzcz, Int>
     @FXML lateinit var tvZamowieniaSzczProdId: TableColumn<ZamowienieSzcz, Int>
@@ -24,7 +24,7 @@ class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int, val showing
         tvZamowieniaSzczProdId.cellValueFactory = PropertyValueFactory("idProduktu")
         tvZamowieniaSzczProd.setCellValueFactory { i: TableColumn.CellDataFeatures<ZamowienieSzcz, String> ->
             var text = "Brak!"
-            val produkt = dbConn.getProdukt(i.value.idProduktu)
+            val produkt = dbConn.getProduct(i.value.idProduktu)
             if (produkt != null)
                 text = produkt.nazwa
             val finalText = text
@@ -33,9 +33,9 @@ class ZamowieniaSzczegolyController(val dbConn: DBConn, val id: Int, val showing
         tvZamowieniaSzczIlosc.cellValueFactory = PropertyValueFactory("ilosc")
         tvZamowieniaSzcz.items = FXCollections.observableList(
             if (showingHistorical)
-                dbConn.getZamowienieHistSzczegoly(id)
+                dbConn.getOrderDetailsHistorical(id)
             else
-                dbConn.getZamowienieSzczegoly(id)
+                dbConn.getOrderDetails(id)
         )
     }
 }

@@ -1,4 +1,4 @@
-package org.example.bazyapp.AddEdit
+package org.example.bazyapp.addEdit
 
 import javafx.fxml.FXML
 import javafx.fxml.FXMLLoader
@@ -9,13 +9,13 @@ import javafx.scene.control.Button
 import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.stage.Stage
-import org.example.bazyapp.BazyController
+import org.example.bazyapp.BaseController
 import org.example.bazyapp.DBConn
 import org.example.bazyapp.ProductSelectorController
 import java.net.URL
 import java.util.*
 
-class AddOrderController (val parent: BazyController, private val dbConn: DBConn, private var idKlienta: Int? = null): Initializable {
+class AddOrderController (val parent: BaseController, private val dbConn: DBConn, private var idKlienta: Int? = null): Initializable {
     @FXML lateinit var txtFldId: TextField
     @FXML lateinit var lblItem: Label
     @FXML lateinit var btnAdd: Button
@@ -56,7 +56,7 @@ class AddOrderController (val parent: BazyController, private val dbConn: DBConn
             idKlienta = txtFldId.text.toInt()
             if (itemsTable.isEmpty() || idKlienta == null)
                 return
-            dbConn.addZamowienie(idKlienta!!, itemsTable)
+            dbConn.addOrder(idKlienta!!, itemsTable)
             parent.refresh()
             (txtFldId.scene.window as Stage).close()
         } catch (e: NumberFormatException) {

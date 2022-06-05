@@ -11,15 +11,13 @@ import javafx.fxml.Initializable
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
 import javafx.stage.Stage
-import org.example.bazyapp.AddEdit.AddOrderController
+import org.example.bazyapp.addEdit.*
 import org.example.bazyapp.models.*
 import java.net.URL
 import java.util.*
 
-class BazyController : Initializable {
+class BaseController : Initializable {
     lateinit var dostawy: Map<Int, Dostawa>
     var dostawyList: ObservableList<Dostawa> = FXCollections.observableArrayList()
 
@@ -196,7 +194,8 @@ class BazyController : Initializable {
                 val alertResult = alert.showAndWait()
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
-                        dbConn.delMagazyn(delCell.tableRow.item.idMagazynu)
+                        dbConn.delWarehouse(delCell.tableRow.item.idMagazynu)
+                        refresh()
                     }
                 }
             }
@@ -251,7 +250,8 @@ class BazyController : Initializable {
                 val alertResult = alert.showAndWait()
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
-                        dbConn.delKlient(delCell.tableRow.item.idKlienta)
+                        dbConn.delClient(delCell.tableRow.item.idKlienta)
+                        refresh()
                     }
                 }
             }
@@ -313,7 +313,8 @@ class BazyController : Initializable {
                 val alertResult = alert.showAndWait()
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
-                        dbConn.delPracownik(delCell.tableRow.item.idPracownika)
+                        dbConn.delWorker(delCell.tableRow.item.idPracownika)
+                        refresh()
                     }
                 }
             }
@@ -364,7 +365,8 @@ class BazyController : Initializable {
                 val alertResult = alert.showAndWait()
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
-                        dbConn.delProdukt(delCell.tableRow.item.idProduktu)
+                        dbConn.delProduct(delCell.tableRow.item.idProduktu)
+                        refresh()
                     }
                 }
             }
@@ -399,8 +401,8 @@ class BazyController : Initializable {
             viewButton.onAction = EventHandler {
                 val detailWindow = Stage()
                 detailWindow.title = "Szczegóły zamówienia"
-                val loader = FXMLLoader(javaClass.getResource("zam-szcz-view.fxml"))
-                val detailController = ZamowieniaSzczegolyController(dbConn, detailCell.tableRow.item.idZamowienia, showingHistorical)
+                val loader = FXMLLoader(javaClass.getResource("order-details-view.fxml"))
+                val detailController = OrderDetailsController(dbConn, detailCell.tableRow.item.idZamowienia, showingHistorical)
                 loader.setController(detailController)
                 val scene = Scene(loader.load(), 600.0, 400.0)
                 detailWindow.scene = scene
@@ -436,7 +438,8 @@ class BazyController : Initializable {
                 val alertResult = alert.showAndWait()
                 alertResult.ifPresent { button: ButtonType ->
                     if (button == ButtonType.YES) {
-                        dbConn.delZamowienie(delCell.tableRow.item.idZamowienia)
+                        dbConn.delOrder(delCell.tableRow.item.idZamowienia)
+                        refresh()
                     }
                 }
             }
@@ -461,12 +464,12 @@ class BazyController : Initializable {
         produktyList.clear()
         zamowieniaList.clear()
 
-        dostawy = dbConn.getDostawy()
-        klienci = dbConn.getKlienci()
-        magazyny = dbConn.getMagazyny()
-        pracownicy = dbConn.getPracownicy()
-        produkty = dbConn.getProdukty()
-        zamowienia = dbConn.getZamowienia()
+        dostawy = dbConn.getDeliveries()
+        klienci = dbConn.getClients()
+        magazyny = dbConn.getWarehouses()
+        pracownicy = dbConn.getWorkers()
+        produkty = dbConn.getProducts()
+        zamowienia = dbConn.getOrders()
 
         for (dostawa in dostawy) dostawyList.add(dostawa.value)
         for (klient in klienci) klienciList.add(klient.value)
@@ -477,7 +480,7 @@ class BazyController : Initializable {
 
         if (::zamowieniaHist.isInitialized) {
             zamowieniaHistList.clear()
-            zamowieniaHist = dbConn.getZamowieniaHist()
+            zamowieniaHist = dbConn.getOrdersHistorical()
             for (zamowienie in zamowieniaHist) zamowieniaHistList.add(zamowienie.value)
         }
 
@@ -491,64 +494,10 @@ class BazyController : Initializable {
         alert.close()
     }
 
-    fun showAddDeliveryWindow() {
-        val addDeliveryWindow = Stage()
-        val root = VBox(10.0)
-        val scene = Scene(root, 640.0, 480.0)
-
-        val boxProdukt = HBox(10.0)
-        val labelProdukt = Label("ID Produktu:")
-        val textProdukt = TextField()
-        boxProdukt.children.addAll(labelProdukt, textProdukt)
-
-        val boxMagazyn = HBox(10.0)
-        val labelMagazyn = Label("ID Magazynu")
-        val textMagazyn = TextField()
-        boxMagazyn.children.addAll(labelMagazyn, textMagazyn)
-
-        val boxPracownik = HBox(10.0)
-        val labelPracownik = Label("ID Pracownika")
-        val textPracownik = TextField()
-        boxPracownik.children.addAll(labelPracownik, textPracownik)
-
-        val boxIlosc = HBox(10.0)
-        val labelIlosc = Label("Ilość")
-        val textIlosc = TextField()
-        boxIlosc.children.addAll(labelIlosc, textIlosc)
-
-        val boxBtns = HBox(10.0)
-        val btnAdd = Button("Dodaj")
-        btnAdd.onAction = EventHandler {
-            try {
-                val produktId = textProdukt.text.toInt()
-                val magazynId = textMagazyn.text.toInt()
-                val pracownikId = textPracownik.text.toInt()
-                val ilosc = textIlosc.text.toInt()
-                dbConn.addDelivery(produktId, magazynId, pracownikId, ilosc)
-                addDeliveryWindow.close()
-            } catch (e: NumberFormatException) {
-                val alert = Alert(Alert.AlertType.ERROR)
-                alert.headerText = "Zły format liczby!"
-                alert.show()
-            }
-        }
-        val btnCancel = Button("Anuluj")
-        btnCancel.onAction = EventHandler {
-            addDeliveryWindow.close()
-        }
-        boxBtns.children.addAll(btnAdd, btnCancel)
-
-        root.children.addAll(boxProdukt, boxMagazyn, boxPracownik, boxIlosc, boxBtns)
-
-        addDeliveryWindow.scene = scene
-        addDeliveryWindow.title = "Dodawanie dostawy"
-        addDeliveryWindow.show()
-    }
-
     fun showAddOrderWindow(id: Int?) {
         val addOrderWindow = Stage()
         addOrderWindow.title = "Dodawanie zamówienia"
-        val loader = FXMLLoader(javaClass.getResource("add-order-view.fxml"))
+        val loader = FXMLLoader(javaClass.getResource("add-edit/add-order-view.fxml"))
         val addOrderController = AddOrderController(this, dbConn, id)
         loader.setController(addOrderController)
         val scene = Scene(loader.load(), 600.0, 400.0)
@@ -558,6 +507,50 @@ class BazyController : Initializable {
 
     fun showAddOrderWindow() {
         showAddOrderWindow(null)
+    }
+
+    fun showAddMagazynWindow() {
+        val addMagazynWindow = Stage()
+        addMagazynWindow.title = "Dodawanie magazynu"
+        val loader = FXMLLoader(javaClass.getResource("add-edit/add-warehouse-view.fxml"))
+        val addWarehouseController = AddWarehouseController(this, dbConn)
+        loader.setController(addWarehouseController)
+        val scene = Scene(loader.load(), 600.0, 400.0)
+        addMagazynWindow.scene = scene
+        addMagazynWindow.show()
+    }
+
+    fun showAddKlientWindow() {
+        val addKlientWindow = Stage()
+        addKlientWindow.title = "Dodawanie klienta"
+        val loader = FXMLLoader(javaClass.getResource("add-edit/add-client-view.fxml"))
+        val addClientController = AddClientController(this, dbConn)
+        loader.setController(addClientController)
+        val scene = Scene(loader.load(), 600.0, 400.0)
+        addKlientWindow.scene = scene
+        addKlientWindow.show()
+    }
+
+    fun showAddProductWindow() {
+        val addProductWindow = Stage()
+        addProductWindow.title = "Dodawanie produktu"
+        val loader = FXMLLoader(javaClass.getResource("add-edit/add-product-view.fxml"))
+        val addProductController = AddProductController(this, dbConn)
+        loader.setController(addProductController)
+        val scene = Scene(loader.load(), 600.0, 400.0)
+        addProductWindow.scene = scene
+        addProductWindow.show()
+    }
+
+    fun showAddWorkerWindow() {
+        val addWorkerWindow = Stage()
+        addWorkerWindow.title = "Dodawanie pracownika"
+        val loader = FXMLLoader(javaClass.getResource("add-edit/add-worker-view.fxml"))
+        val addWorkerController = AddWorkerController(this, dbConn)
+        loader.setController(addWorkerController)
+        val scene = Scene(loader.load(), 600.0, 400.0)
+        addWorkerWindow.scene = scene
+        addWorkerWindow.show()
     }
 
     fun exit() {
@@ -601,7 +594,7 @@ class BazyController : Initializable {
 
     fun toggleOrderList() {
         if (!::zamowieniaHist.isInitialized) {
-            zamowieniaHist = dbConn.getZamowieniaHist()
+            zamowieniaHist = dbConn.getOrdersHistorical()
             for (zamowienie in zamowieniaHist) zamowieniaHistList.add(zamowienie.value)
         }
         

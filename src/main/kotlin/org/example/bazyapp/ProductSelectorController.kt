@@ -6,7 +6,7 @@ import javafx.fxml.Initializable
 import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.stage.Stage
-import org.example.bazyapp.AddEdit.AddOrderController
+import org.example.bazyapp.addEdit.AddOrderController
 import org.example.bazyapp.models.Produkt
 import java.net.URL
 import java.util.*
