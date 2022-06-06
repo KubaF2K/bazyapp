@@ -43,7 +43,7 @@ class AddOrderController (val parent: BaseController, private val dbConn: DBConn
     fun showItemSelection() {
         val selectorWindow = Stage()
         selectorWindow.title = "Wybierz produkty"
-        val loader = FXMLLoader(javaClass.getResource("product-selector-view.fxml"))
+        val loader = FXMLLoader(javaClass.getResource("../product-selector-view.fxml"))
         val selectorController = ProductSelectorController(this)
         loader.setController(selectorController)
         val scene = Scene(loader.load(), 600.0, 400.0)
